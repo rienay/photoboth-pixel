@@ -47,9 +47,9 @@ function Photobooth() {
   const [strip, setStrip] = useState<string | null>(null);
 
   return (
-    <main className="min-h-screen flex flex-col items-center px-4 py-8">
+    <main className="min-h-screen flex flex-col items-center px-4 sm:px-8 py-6 sm:py-10">
       <Header />
-      <div className="w-full max-w-5xl flex-1 flex items-center justify-center py-6">
+      <div className="w-full max-w-4xl flex-1 flex items-center justify-center py-4 sm:py-8">
         {screen === "home" && <HomeScreen onStart={() => setScreen("frame")} />}
         {screen === "frame" && (
           <FrameScreen
@@ -143,39 +143,26 @@ function PixelLogo() {
 
 function HomeScreen({ onStart }: { onStart: () => void }) {
   return (
-    <div className="grid md:grid-cols-2 gap-10 items-center w-full">
-      <div className="space-y-6">
-        <div className="speech inline-block">
-          <p className="pixel text-xs leading-relaxed">HELLO, TRAVELER!</p>
-        </div>
-        <h2 className="text-2xl sm:text-4xl leading-snug">
-          Jepret Momen<br />Lucumu Dalam<br /><span style={{ color: "var(--color-blush)" }}>Mode Piksel ✦</span>
-        </h2>
-        <p className="text-lg" style={{ fontFamily: "var(--font-body)" }}>
-          Pilih bingkai bertema retro, ambil tiga foto beruntun,
-          lalu unduh strip fotomu yang super gemas.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <button className="pixel-btn" onClick={onStart}>▶ Start</button>
-          <a href="#how" className="pixel-btn-powder">? How to Play</a>
-        </div>
-        <div id="how" className="grid grid-cols-3 gap-3 pt-4">
-          {[
-            { n: "1", t: "Pilih Frame" },
-            { n: "2", t: "Jepret 3x" },
-            { n: "3", t: "Simpan!" },
-          ].map((s) => (
-            <div key={s.n} className="pixel-box p-3 text-center">
-              <div className="pixel text-base" style={{ color: "var(--color-blush)" }}>{s.n}</div>
-              <div className="text-base mt-1" style={{ fontFamily: "var(--font-body)" }}>{s.t}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative float-y">
+    <div className="flex flex-col items-center justify-center gap-8 sm:gap-12 w-full">
+      {/* Arcade mockup — responsive size */}
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md">
         <ArcadeMockup />
       </div>
+
+      {/* BIG START BUTTON — easy to tap on tablet */}
+      <button
+        id="start-btn"
+        className="pixel-btn"
+        onClick={onStart}
+        style={{
+          fontSize: "clamp(1.1rem, 3vw, 1.6rem)",
+          padding: "clamp(1rem, 3vw, 1.4rem) clamp(2.5rem, 8vw, 5rem)",
+          letterSpacing: "0.12em",
+          minWidth: "min(80vw, 340px)",
+        }}
+      >
+        ▶ START PHOTO
+      </button>
     </div>
   );
 }
