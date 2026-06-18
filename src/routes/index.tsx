@@ -55,8 +55,6 @@ function Photobooth() {
           <FrameScreen
             selected={frame}
             setSelected={setFrame}
-            selectedLayout={effectiveLayout}
-            setSelectedLayout={setLayout}
             onBack={() => setScreen("home")}
             onNext={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
           />
@@ -193,12 +191,10 @@ function ArcadeMockup() {
 /* ───────────────────────── Frame select ───────────────────────── */
 
 function FrameScreen({
-  selected, setSelected, selectedLayout, setSelectedLayout, onBack, onNext,
+  selected, setSelected, onBack, onNext,
 }: {
   selected: FrameId;
   setSelected: (f: FrameId) => void;
-  selectedLayout: LayoutId;
-  setSelectedLayout: (l: LayoutId) => void;
   onBack: () => void;
   onNext: () => void;
 }) {
@@ -225,50 +221,12 @@ function FrameScreen({
                 }}
               >
                 <div className="aspect-[3/4] pixel-box flex items-center justify-center" style={{ background: f.bg }}>
-                  <FramePreview id={f.id} layout={selectedLayout} />
+                  <FramePreview id={f.id} layout={f.id === "template" ? "1x1" : "3x1"} />
                 </div>
                 <div className="mt-3 pixel text-[11px]">{f.name}</div>
                 <div className="text-base mt-1" style={{ fontFamily: "var(--font-body)" }}>{f.subtitle}</div>
                 <div className="mt-2 text-xs pixel" style={{ color: active ? "var(--color-blush)" : "transparent" }}>
                   ▶ SELECTED
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div>
-        <div className="speech inline-block mb-4">
-          <p className="pixel text-xs">PILIH LAYOUT STRIP!</p>
-        </div>
-        <div className="grid sm:grid-cols-4 gap-4">
-          {LAYOUTS.map((l) => {
-            const active = selectedLayout === l.id;
-            return (
-              <button
-                key={l.id}
-                onClick={() => setSelectedLayout(l.id)}
-                className="pixel-box p-4 flex flex-col items-center justify-between text-center transition-transform w-full min-h-[200px]"
-                style={{
-                  background: active ? "var(--color-butter)" : "var(--color-card)",
-                  transform: active ? "translate(-2px,-2px)" : undefined,
-                  boxShadow: active
-                    ? "0 4px 0 0 var(--color-ink),0 -4px 0 0 var(--color-ink),4px 0 0 0 var(--color-ink),-4px 0 0 0 var(--color-ink),6px 6px 0 0 var(--color-ink)"
-                    : undefined,
-                }}
-              >
-                {/* Retro pastel paper mockup representing the layout */}
-                <LayoutPreview layout={l.id} />
-
-                <div className="w-full mt-1">
-                  <div className="flex justify-center items-center gap-1.5 mb-1">
-                    <span className="text-base leading-none">{l.emoji}</span>
-                    <span className="pixel text-[11px] font-bold leading-none">{l.name}</span>
-                  </div>
-                  <div className="text-[10px] text-muted-foreground leading-normal" style={{ fontFamily: "var(--font-body)" }}>
-                    {l.desc}
-                  </div>
                 </div>
               </button>
             );
