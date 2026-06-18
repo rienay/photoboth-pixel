@@ -22,7 +22,7 @@ type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru";
 type LayoutId = "3x1" | "3x2" | "2x1" | "1x1";
 
 const FRAMES: { id: FrameId; name: string; emoji: string; bg: string; subtitle: string }[] = [
-  { id: "ruangguru", name: "Ruangguru", emoji: "🏫", bg: "#D5ECF8", subtitle: "Tema Pixel Belajar" },
+  { id: "ruangguru", name: "RUANG GURU", emoji: "🏫", bg: "#D5ECF8", subtitle: "Tema Pixel Belajar" },
   { id: "cafe", name: "Cozy Cafe", emoji: "☕", bg: "var(--color-blush)", subtitle: "Sudut kafe pixel" },
   { id: "gameboy", name: "GameBoy", emoji: "🎮", bg: "var(--color-sage)", subtitle: "Layar konsol mini" },
   { id: "bedroom", name: "Retro Room", emoji: "🛏️", bg: "var(--color-powder)", subtitle: "Kamar tidur cozy" },
@@ -308,7 +308,7 @@ function FramePreview({ id, layout }: { id: FrameId; layout: LayoutId }) {
     <div className="w-full h-full p-3 flex flex-col justify-between relative select-none">
       {/* Mini Title */}
       <div className="text-center">
-        {id === "ruangguru" && <span className="pixel text-[9px] text-[#22385C] font-bold">★ RG ACADEMY</span>}
+        {id === "ruangguru" && <span className="pixel text-[9px] text-[#22385C] font-bold">★ RUANG GURU</span>}
         {id === "cafe" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">☕ CAFE</span>}
         {id === "gameboy" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">▶ GAMEBOY</span>}
         {id === "bedroom" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">♡ ROOM</span>}
@@ -644,7 +644,7 @@ function ResultScreen({
 }) {
   const [customText, setCustomText] = useState(() => {
     if (frame === "ruangguru") {
-      return "★ RUANGGURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
+      return "★ RUANG GURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
     }
     return "★ PIXELSNAP · " + new Date().toLocaleDateString() + " ★";
   });
@@ -795,7 +795,7 @@ async function composeStrip(
   ctx.imageSmoothingQuality = "high";
 
   const palette: Record<FrameId, { bg: string; accent: string; title: string }> = {
-    ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANGGURU ★" },
+    ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANG GURU ★" },
     cafe: { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
     gameboy: { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
     bedroom: { bg: "#CFDDF0", accent: "#3A2A40", title: "♡ RETRO ROOM ♡" },
@@ -935,45 +935,90 @@ async function composeStrip(
     ctx.fillText("🌙", W - pad - 50 * SCALE, decY);
   } else if (frame === "ruangguru") {
     // Ruangguru academy/school themed decorations
+    const rgDecY = H - pad - footerH + 90 * SCALE; // custom Y positioning for footer elements
+    const stickerH = 65 * SCALE; // significantly larger stickers
+
     try {
       // Draw Gacha Machine on the left
       const gacha = await loadImg(gachaAsset);
-      const gachaH = 40 * SCALE;
-      const gachaW = (gacha.width / gacha.height) * gachaH;
-      ctx.drawImage(gacha, pad + 30 * SCALE, decY - gachaH / 2, gachaW, gachaH);
+      const gachaW = (gacha.width / gacha.height) * stickerH;
+      ctx.drawImage(gacha, pad + 25 * SCALE, rgDecY - stickerH / 2, gachaW, stickerH);
     } catch (e) {
-      ctx.font = `${Math.round(24 * SCALE)}px sans-serif`;
-      ctx.fillText("🎒", pad + 50 * SCALE, decY);
+      ctx.font = `${Math.round(28 * SCALE)}px sans-serif`;
+      ctx.fillText("🎒", pad + 50 * SCALE, rgDecY);
     }
 
     try {
       // Draw Flower on the right
       const flower = await loadImg(flowerAsset);
-      const flowerH = 40 * SCALE;
-      const flowerW = (flower.width / flower.height) * flowerH;
-      ctx.drawImage(flower, W - pad - 30 * SCALE - flowerW, decY - flowerH / 2, flowerW, flowerH);
+      const flowerW = (flower.width / flower.height) * stickerH;
+      ctx.drawImage(flower, W - pad - 25 * SCALE - flowerW, rgDecY - stickerH / 2, flowerW, stickerH);
     } catch (e) {
-      ctx.font = `${Math.round(24 * SCALE)}px sans-serif`;
-      ctx.fillText("🎓", W - pad - 50 * SCALE, decY);
+      ctx.font = `${Math.round(28 * SCALE)}px sans-serif`;
+      ctx.fillText("🎓", W - pad - 50 * SCALE, rgDecY);
+    }
+
+    // Draw Bimbel / Study slogan banners in the middle space
+    try {
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // 1. Banner "SQUAD JUARA" (Ruangguru Blue)
+      ctx.fillStyle = "#008ECF";
+      ctx.fillRect(W / 2 - 100 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
+      ctx.strokeStyle = p.accent;
+      ctx.lineWidth = 2.5 * SCALE;
+      ctx.strokeRect(W / 2 - 100 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
+      
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `bold ${Math.round(7.5 * SCALE)}px 'Press Start 2P', monospace`;
+      ctx.fillText("SQUAD JUARA", W / 2 - 52.5 * SCALE, rgDecY - 11 * SCALE);
+
+      // 2. Banner "LULUS PTN! 🎓" (Ruangguru Orange)
+      ctx.fillStyle = "#F89E1B";
+      ctx.fillRect(W / 2 + 5 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
+      ctx.strokeStyle = p.accent;
+      ctx.lineWidth = 2.5 * SCALE;
+      ctx.strokeRect(W / 2 + 5 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
+      
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `bold ${Math.round(7.5 * SCALE)}px 'Press Start 2P', monospace`;
+      ctx.fillText("LULUS PTN!🎓", W / 2 + 52.5 * SCALE, rgDecY - 11 * SCALE);
+
+      // 3. Sub-banner "FUTURE LEADERS" (Centered below the two banners)
+      ctx.fillStyle = "#22385C";
+      ctx.fillRect(W / 2 - 80 * SCALE, rgDecY + 4 * SCALE, 160 * SCALE, 16 * SCALE);
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 1.5 * SCALE;
+      ctx.strokeRect(W / 2 - 80 * SCALE, rgDecY + 4 * SCALE, 160 * SCALE, 16 * SCALE);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `bold ${Math.round(7 * SCALE)}px 'Press Start 2P', monospace`;
+      ctx.fillText("★ FUTURE LEADERS ★", W / 2, rgDecY + 13 * SCALE);
+      
+      ctx.restore();
+    } catch (e) {
+      console.error("Failed to draw slogan banners", e);
     }
   }
 
   // draw small logos in the header
   try {
     if (frame === "ruangguru") {
-      // Draw Ruangguru logo on the left
+      // Draw Ruangguru logo on the left (Make it bigger!)
       const rgLogo = await loadImg(ruangguruLogo);
-      const rgLogoH = 26 * SCALE; // slightly smaller vertical to fit cleanly
+      const rgLogoH = 42 * SCALE; // Significantly larger (was 26)
       const rgLogoW = (rgLogo.width / rgLogo.height) * rgLogoH;
-      const rgLogoX = pad + 12 * SCALE;
+      const rgLogoX = pad + 8 * SCALE;
       const rgLogoY = pad + (headerH - rgLogoH) / 2;
       ctx.drawImage(rgLogo, rgLogoX, rgLogoY, rgLogoW, rgLogoH);
 
       // Draw Yodha logo on the right
       const ydLogo = await loadImg(yodhaLogo);
-      const ydLogoH = 28 * SCALE;
+      const ydLogoH = 34 * SCALE; // Proportional and larger
       const ydLogoW = (ydLogo.width / ydLogo.height) * ydLogoH;
-      const ydLogoX = W - pad - 12 * SCALE - ydLogoW;
+      const ydLogoX = W - pad - 8 * SCALE - ydLogoW;
       const ydLogoY = pad + (headerH - ydLogoH) / 2;
       ctx.drawImage(ydLogo, ydLogoX, ydLogoY, ydLogoW, ydLogoH);
     } else {
