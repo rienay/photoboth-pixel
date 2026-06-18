@@ -5,6 +5,7 @@ import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
 import templateFrameAsset from "@/assets/frame-benar.png";
+import frame2Asset from "@/assets/frame2.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -140,26 +141,39 @@ function PixelLogo() {
 
 function HomeScreen({ onStart }: { onStart: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 sm:gap-12 w-full">
-      {/* Arcade mockup — responsive size */}
-      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md">
-        <ArcadeMockup />
+    <div className="flex flex-row items-center justify-between w-full h-full min-h-[60vh] gap-4">
+      {/* Left Decoration */}
+      <div className="hidden sm:flex flex-1 flex-col items-center justify-center gap-8 opacity-90">
+        <div className="scale-75 origin-center">
+          <ArcadeMockup />
+        </div>
+        <img src={flowerAsset} alt="flower" className="w-24 lg:w-32 object-contain" style={{ imageRendering: "pixelated" }} />
       </div>
 
-      {/* BIG START BUTTON — easy to tap on tablet */}
-      <button
-        id="start-btn"
-        className="pixel-btn"
-        onClick={onStart}
-        style={{
-          fontSize: "clamp(1.1rem, 3vw, 1.6rem)",
-          padding: "clamp(1rem, 3vw, 1.4rem) clamp(2.5rem, 8vw, 5rem)",
-          letterSpacing: "0.12em",
-          minWidth: "min(80vw, 340px)",
-        }}
-      >
-        ▶ START PHOTO
-      </button>
+      {/* Center content (Start Button) */}
+      <div className="flex-shrink-0 z-10 mx-2 sm:mx-8">
+        <button
+          id="start-btn"
+          className="pixel-btn hover:scale-105 transition-transform"
+          onClick={onStart}
+          style={{
+            fontSize: "clamp(1.2rem, 3.5vw, 2rem)",
+            padding: "clamp(1.5rem, 3vw, 2.5rem) clamp(2.5rem, 6vw, 5rem)",
+            letterSpacing: "0.15em",
+            boxShadow: "8px 8px 0 0 rgba(0,0,0,0.15), inset -4px -4px 0 0 rgba(0,0,0,0.1)",
+          }}
+        >
+          ▶ START PHOTO
+        </button>
+      </div>
+
+      {/* Right Decoration */}
+      <div className="hidden sm:flex flex-1 flex-col items-center justify-center gap-8 opacity-90">
+        <img src={gachaAsset} alt="gacha" className="w-28 lg:w-40 object-contain" style={{ imageRendering: "pixelated" }} />
+        <div className="scale-75 origin-center">
+          <ArcadeMockup />
+        </div>
+      </div>
     </div>
   );
 }
@@ -461,6 +475,8 @@ function ShootScreen({
     let strip: string;
     if (frame === "template") {
       strip = await composeTemplateFrame(captured);
+    } else if (layout === "3x2") {
+      strip = await compose3x2Frame(captured);
     } else {
       strip = await composeStrip(captured, frame, layout);
     }
@@ -569,15 +585,24 @@ function ShootScreen({
       {/* Preview strip */}
       <aside className={`pixel-box p-4 w-full ${layoutConfig.cols === 2 ? "lg:w-80" : "lg:w-56"}`} style={{ background: "var(--color-card)" }}>
         <div className="pixel text-[10px] text-center mb-3">PREVIEW</div>
-        <div className={`grid gap-2 ${layoutConfig.cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-          {[...Array(total)].map((_, i) => (
-            <div key={i} className="aspect-[4/3] border-4 flex items-center justify-center text-2xl"
-              style={{ borderColor: "var(--color-ink)", background: photos[i] ? "transparent" : "var(--color-muted)" }}>
-              {photos[i]
-                ? <img src={photos[i]} alt={`shot ${i + 1}`} className="w-full h-full object-cover" />
-                : <span className="pixel text-[10px] opacity-50">{i + 1}</span>}
-            </div>
-          ))}
+        <div className="relative">
+          {layout === "3x2" && (
+            <img 
+              src={frame2Asset} 
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" 
+              alt="frame overlay" 
+            />
+          )}
+          <div className={`grid ${layout === "3x2" ? "gap-0" : "gap-2"} ${layoutConfig.cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+            {[...Array(total)].map((_, i) => (
+              <div key={i} className={`aspect-[4/3] flex items-center justify-center text-2xl ${layout === "3x2" ? "" : "border-4"}`}
+                style={{ borderColor: "var(--color-ink)", background: photos[i] ? "transparent" : "var(--color-muted)" }}>
+                {photos[i]
+                  ? <img src={photos[i]} alt={`shot ${i + 1}`} className="w-full h-full object-cover" />
+                  : <span className="pixel text-[10px] opacity-50">{i + 1}</span>}
+              </div>
+            ))}
+          </div>
         </div>
       </aside>
     </div>
@@ -679,38 +704,9 @@ function ResultScreen({
           <div className="pixel text-[9px] text-center mt-3">PIXELSNAP ©</div>
         </div>
       </div>
-      <div className="space-y-6">
-        <div className="speech inline-block">
-          <p className="pixel text-xs">CETAK SELESAI! ✦</p>
-        </div>
-        <h2 className="text-2xl sm:text-3xl">Strip Foto Kamu<br /><span style={{ color: "var(--color-blush)" }}>Sudah Jadi!</span></h2>
-
-        {/* Custom Text Input */}
-        <div className="space-y-2">
-          <label className="pixel text-[10px] block" htmlFor="footer-text-input">CUSTOM TEKS DI BAWAH STRIP:</label>
-          <input
-            id="footer-text-input"
-            type="text"
-            value={customText}
-            onChange={(e) => handleTextChange(e.target.value)}
-            className="w-full pixel-box p-3 text-sm focus:outline-none"
-            style={{ background: "var(--color-card)" }}
-            placeholder="Tulis pesanmu di sini..."
-            maxLength={40}
-          />
-        </div>
-
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "1.15rem" }}>
-          Simpan hasilnya ke perangkatmu atau ambil ulang kalau mau gaya baru.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button className="pixel-btn" onClick={download}>⬇ Download</button>
-          <button className="pixel-btn-sage" onClick={onRetake}>↻ Retake</button>
-          <button className="pixel-btn-powder" onClick={onHome}>⌂ Home</button>
-        </div>
-
+      <div className="flex flex-col items-center justify-center space-y-6">
         {/* Google Drive QR Code (Minimalist Version) */}
-        <div className="pixel-box p-4 flex flex-col items-center gap-3 mt-4" style={{ background: "var(--color-card)" }}>
+        <div className="pixel-box p-4 flex flex-col items-center gap-3 w-full" style={{ background: "var(--color-card)" }}>
           <div className="pixel-box p-2 bg-white border-2 border-[#3A2A40] shadow-[3px_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center shrink-0">
             <img 
               src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(DRIVE_FOLDER_URL)}`} 
@@ -719,6 +715,13 @@ function ResultScreen({
             />
           </div>
           <span className="pixel text-[10px] font-bold text-center">SCAN UNTUK DOWNLOAD FOTO</span>
+        </div>
+
+        {/* Small Action Buttons */}
+        <div className="flex flex-wrap justify-center gap-3">
+          <button className="pixel-btn" style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }} onClick={download}>⬇ Download</button>
+          <button className="pixel-btn-sage" style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }} onClick={onRetake}>↻ Retake</button>
+          <button className="pixel-btn-powder" style={{ fontSize: '0.8rem', padding: '0.5rem 1rem' }} onClick={onHome}>⌂ Home</button>
         </div>
       </div>
     </div>
@@ -781,6 +784,67 @@ async function composeTemplateFrame(photos: string[]): Promise<string> {
   } catch (e) {
     console.error("Failed to load template frame overlay", e);
   }
+
+  return canvas.toDataURL("image/png");
+}
+
+async function compose3x2Frame(photos: string[]): Promise<string> {
+  const frameImg = await loadImg(frame2Asset);
+  const w = frameImg.width;
+  const h = frameImg.height;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
+  // background
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, w, h);
+
+  // Use the exact coordinates of the 6 transparent holes found in frame2.png
+  // Base dimensions: 1333x1999
+  const rw = w / 1333;
+  const rh = h / 1999;
+  
+  const holes = [
+    { x: 125 * rw, y: 552 * rh, w: 419 * rw, h: 316 * rh },
+    { x: 781 * rw, y: 560 * rh, w: 420 * rw, h: 316 * rh },
+    { x: 125 * rw, y: 1019 * rh, w: 419 * rw, h: 316 * rh },
+    { x: 781 * rw, y: 1028 * rh, w: 420 * rw, h: 315 * rh },
+    { x: 125 * rw, y: 1487 * rh, w: 419 * rw, h: 316 * rh },
+    { x: 781 * rw, y: 1495 * rh, w: 420 * rw, h: 316 * rh }
+  ];
+
+  for (let i = 0; i < 6; i++) {
+    if (photos[i] && holes[i]) {
+      try {
+        const img = await loadImg(photos[i]);
+        const hole = holes[i];
+        
+        const imgRatio = img.width / img.height;
+        const cellRatio = hole.w / hole.h;
+        
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > cellRatio) {
+          sw = img.height * cellRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / cellRatio;
+          sy = (img.height - sh) / 2;
+        }
+        
+        ctx.drawImage(img, sx, sy, sw, sh, hole.x, hole.y, hole.w, hole.h);
+      } catch (e) {
+        console.error("Failed to load photo for 3x2 frame", e);
+      }
+    }
+  }
+
+  // Draw overlay
+  ctx.drawImage(frameImg, 0, 0, w, h);
 
   return canvas.toDataURL("image/png");
 }
