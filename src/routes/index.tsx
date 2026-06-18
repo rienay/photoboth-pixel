@@ -4,7 +4,7 @@ import yodhaLogo from "@/assets/yodha-logo.png";
 import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
-import templateFrameAsset from "@/assets/template-frame.png";
+import templateFrameAsset from "@/assets/frame-benar.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -773,25 +773,15 @@ function ResultScreen({
 function wait(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 /**
- * compositeTemplateFrame:
- * Draws one camera photo into the black hole area of template-frame.png,
- * then overlays the frame PNG on top so all stickers/logos are always visible.
+ * composeTemplateFrame — True Twibbon compositing:
  *
- * The frame image is 1402×1122. The black photo area is approximately:
- *   left: 230px, top: 265px, right: 1172px, bottom: 770px
- * (measured in original 1402x1122 frame coordinates)
+ * frame-benar.png has a TRANSPARENT hole in the centre.
+ * Step 1: Draw photo scaled to fill the full canvas (cover-crop).
+ * Step 2: Draw frame-benar.png on top — transparent hole reveals photo.
  */
 async function composeTemplateFrame(photos: string[]): Promise<string> {
   const FRAME_W = 1402;
   const FRAME_H = 1122;
-
-  // Photo hole coordinates in original frame pixel space (black area)
-  const HOLE_LEFT   = 228;
-  const HOLE_TOP    = 265;
-  const HOLE_RIGHT  = 1174;
-  const HOLE_BOTTOM = 772;
-  const HOLE_W = HOLE_RIGHT - HOLE_LEFT;
-  const HOLE_H = HOLE_BOTTOM - HOLE_TOP;
 
   const canvas = document.createElement("canvas");
   canvas.width  = FRAME_W;
@@ -800,33 +790,34 @@ async function composeTemplateFrame(photos: string[]): Promise<string> {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
-  // 1. Fill background (dark teal matching the frame)
-  ctx.fillStyle = "#0D3B59";
-  ctx.fillRect(0, 0, FRAME_W, FRAME_H);
-
-  // 2. Draw the camera photo inside the hole (cover-crop to fill)
+  // STEP 1: Draw camera photo to fill the entire canvas background (cover-crop)
   if (photos.length > 0) {
     try {
       const img = await loadImg(photos[0]);
-      const holeRatio = HOLE_W / HOLE_H;
-      const imgRatio  = img.width / img.height;
+      const frameRatio = FRAME_W / FRAME_H;
+      const imgRatio   = img.width / img.height;
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if (imgRatio > holeRatio) {
-        sw = img.height * holeRatio;
+      if (imgRatio > frameRatio) {
+        // image wider than canvas → crop sides
+        sw = img.height * frameRatio;
         sx = (img.width - sw) / 2;
       } else {
-        sh = img.width / holeRatio;
+        // image taller than canvas → crop top/bottom
+        sh = img.width / frameRatio;
         sy = (img.height - sh) / 2;
       }
-      ctx.drawImage(img, sx, sy, sw, sh, HOLE_LEFT, HOLE_TOP, HOLE_W, HOLE_H);
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, FRAME_W, FRAME_H);
     } catch (e) {
-      // If photo fails, just leave hole dark
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(HOLE_LEFT, HOLE_TOP, HOLE_W, HOLE_H);
+      ctx.fillStyle = "#0D3B59";
+      ctx.fillRect(0, 0, FRAME_W, FRAME_H);
     }
+  } else {
+    ctx.fillStyle = "#0D3B59";
+    ctx.fillRect(0, 0, FRAME_W, FRAME_H);
   }
 
-  // 3. Overlay the frame image ON TOP so stickers/logos cover the photo
+  // STEP 2: Overlay frame-benar.png on top.
+  // frame-benar.png has a transparent hole — photo shows through perfectly (true twibbon).
   try {
     const frameImg = await loadImg(templateFrameAsset);
     ctx.drawImage(frameImg, 0, 0, FRAME_W, FRAME_H);
@@ -836,6 +827,7 @@ async function composeTemplateFrame(photos: string[]): Promise<string> {
 
   return canvas.toDataURL("image/png");
 }
+
 
 async function composeStrip(
   photos: string[],
