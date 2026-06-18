@@ -39,10 +39,8 @@ const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPh
 
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [frame, setFrame] = useState<FrameId>("template");
-  // If frame is 'template', force layout to 1x1 (1 photo only)
-  const effectiveLayout: LayoutId = frame === "template" ? "1x1" : layout;
-  const [layout, setLayout] = useState<LayoutId>("3x1");
+  // Frame is automatically derived from layout: 1x1 uses the official twibbon, others use ruangguru strip
+  const frame: FrameId = layout === "1x1" ? "template" : "ruangguru";
   const [photos, setPhotos] = useState<string[]>([]);
   const [strip, setStrip] = useState<string | null>(null);
 
@@ -53,8 +51,8 @@ function Photobooth() {
         {screen === "home" && <HomeScreen onStart={() => setScreen("frame")} />}
         {screen === "frame" && (
           <FrameScreen
-            selected={frame}
-            setSelected={setFrame}
+            selectedLayout={layout}
+            setSelectedLayout={setLayout}
             onBack={() => setScreen("home")}
             onNext={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
           />
@@ -62,7 +60,7 @@ function Photobooth() {
         {screen === "shoot" && (
           <ShootScreen
             frame={frame}
-            layout={effectiveLayout}
+            layout={layout}
             photos={photos}
             setPhotos={setPhotos}
             onDone={(stripDataUrl) => { setStrip(stripDataUrl); setScreen("result"); }}
@@ -73,7 +71,7 @@ function Photobooth() {
           <ResultScreen
             photos={photos}
             frame={frame}
-            layout={effectiveLayout}
+            layout={layout}
             strip={strip}
             setStrip={setStrip}
             onRetake={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
@@ -191,10 +189,10 @@ function ArcadeMockup() {
 /* ───────────────────────── Frame select ───────────────────────── */
 
 function FrameScreen({
-  selected, setSelected, onBack, onNext,
+  selectedLayout, setSelectedLayout, onBack, onNext,
 }: {
-  selected: FrameId;
-  setSelected: (f: FrameId) => void;
+  selectedLayout: LayoutId;
+  setSelectedLayout: (l: LayoutId) => void;
   onBack: () => void;
   onNext: () => void;
 }) {
@@ -202,31 +200,35 @@ function FrameScreen({
     <div className="w-full space-y-8">
       <div>
         <div className="speech inline-block mb-4">
-          <p className="pixel text-xs">PILIH BINGKAIMU!</p>
+          <p className="pixel text-xs">PILIH LAYOUT STRIP!</p>
         </div>
-        <div className="grid sm:grid-cols-3 gap-6">
-          {FRAMES.map((f) => {
-            const active = selected === f.id;
+        <div className="grid sm:grid-cols-4 gap-4">
+          {LAYOUTS.map((l) => {
+            const active = selectedLayout === l.id;
             return (
               <button
-                key={f.id}
-                onClick={() => setSelected(f.id)}
-                className="pixel-box p-4 text-left transition-transform w-full"
+                key={l.id}
+                onClick={() => setSelectedLayout(l.id)}
+                className="pixel-box p-4 flex flex-col items-center justify-between text-center transition-transform w-full min-h-[200px]"
                 style={{
-                  background: f.bg,
+                  background: active ? "var(--color-butter)" : "var(--color-card)",
                   transform: active ? "translate(-2px,-2px)" : undefined,
                   boxShadow: active
-                    ? "0 4px 0 0 var(--color-ink),0 -4px 0 0 var(--color-ink),4px 0 0 0 var(--color-ink),-4px 0 0 0 var(--color-ink),12px 12px 0 0 var(--color-ink)"
+                    ? "0 4px 0 0 var(--color-ink),0 -4px 0 0 var(--color-ink),4px 0 0 0 var(--color-ink),-4px 0 0 0 var(--color-ink),6px 6px 0 0 var(--color-ink)"
                     : undefined,
                 }}
               >
-                <div className="aspect-[3/4] pixel-box flex items-center justify-center" style={{ background: f.bg }}>
-                  <FramePreview id={f.id} layout={f.id === "template" ? "1x1" : "3x1"} />
-                </div>
-                <div className="mt-3 pixel text-[11px]">{f.name}</div>
-                <div className="text-base mt-1" style={{ fontFamily: "var(--font-body)" }}>{f.subtitle}</div>
-                <div className="mt-2 text-xs pixel" style={{ color: active ? "var(--color-blush)" : "transparent" }}>
-                  ▶ SELECTED
+                {/* Retro pastel paper mockup representing the layout */}
+                <LayoutPreview layout={l.id} />
+
+                <div className="w-full mt-1">
+                  <div className="flex justify-center items-center gap-1.5 mb-1">
+                    <span className="text-base leading-none">{l.emoji}</span>
+                    <span className="pixel text-[11px] font-bold leading-none">{l.name}</span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground leading-normal" style={{ fontFamily: "var(--font-body)" }}>
+                    {l.desc}
+                  </div>
                 </div>
               </button>
             );
@@ -810,6 +812,7 @@ async function composeStrip(
   ctx.imageSmoothingQuality = "high";
 
   const palette: Record<FrameId, { bg: string; accent: string; title: string }> = {
+    template: { bg: "#0D3B59", accent: "#F89E1B", title: "★ RESMI ★" },
     ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANG GURU ★" },
     cafe: { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
     gameboy: { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
