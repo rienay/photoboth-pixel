@@ -487,7 +487,7 @@ function ShootScreen({
             <span className="pixel text-[9px]">LIVE</span>
           </div>
 
-          <div className="relative aspect-[4/3] w-full overflow-hidden" style={{ background: "var(--color-ink)" }}>
+          <div className={`relative w-full overflow-hidden ${frame === "template" ? "aspect-[1402/1122]" : "aspect-[4/3]"}`} style={{ background: "var(--color-ink)" }}>
             {error ? (
               <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm" style={{ background: "var(--color-card)" }}>
                 <div>
@@ -502,6 +502,15 @@ function ShootScreen({
                 muted
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ transform: "scaleX(-1)" }}
+              />
+            )}
+
+            {/* frame overlay */}
+            {frame === "template" && (
+              <img 
+                src={templateFrameAsset} 
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" 
+                alt="frame overlay" 
               />
             )}
 
