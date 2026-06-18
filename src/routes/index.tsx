@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import yodhaLogoAsset from "@/assets/yodha-logo.png.asset.json";
+import yodhaLogo from "@/assets/yodha-logo.png";
+import ruangguruLogo from "@/assets/ruangguru.png";
+import gachaAsset from "@/assets/GACHA MACHINE.png";
+import flowerAsset from "@/assets/FLOWER.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,10 +18,11 @@ export const Route = createFileRoute("/")({
 });
 
 type Screen = "home" | "frame" | "shoot" | "result";
-type FrameId = "cafe" | "gameboy" | "bedroom";
+type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru";
 type LayoutId = "3x1" | "3x2" | "2x1" | "1x1";
 
 const FRAMES: { id: FrameId; name: string; emoji: string; bg: string; subtitle: string }[] = [
+  { id: "ruangguru", name: "Ruangguru", emoji: "🏫", bg: "#D5ECF8", subtitle: "Tema Pixel Belajar" },
   { id: "cafe", name: "Cozy Cafe", emoji: "☕", bg: "var(--color-blush)", subtitle: "Sudut kafe pixel" },
   { id: "gameboy", name: "GameBoy", emoji: "🎮", bg: "var(--color-sage)", subtitle: "Layar konsol mini" },
   { id: "bedroom", name: "Retro Room", emoji: "🛏️", bg: "var(--color-powder)", subtitle: "Kamar tidur cozy" },
@@ -33,7 +37,7 @@ const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPh
 
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [frame, setFrame] = useState<FrameId>("cafe");
+  const [frame, setFrame] = useState<FrameId>("ruangguru");
   const [layout, setLayout] = useState<LayoutId>("3x1");
   const [photos, setPhotos] = useState<string[]>([]);
   const [strip, setStrip] = useState<string | null>(null);
@@ -304,6 +308,7 @@ function FramePreview({ id, layout }: { id: FrameId; layout: LayoutId }) {
     <div className="w-full h-full p-3 flex flex-col justify-between relative select-none">
       {/* Mini Title */}
       <div className="text-center">
+        {id === "ruangguru" && <span className="pixel text-[9px] text-[#22385C] font-bold">★ RG ACADEMY</span>}
         {id === "cafe" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">☕ CAFE</span>}
         {id === "gameboy" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">▶ GAMEBOY</span>}
         {id === "bedroom" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">♡ ROOM</span>}
@@ -359,6 +364,13 @@ function FramePreview({ id, layout }: { id: FrameId; layout: LayoutId }) {
             <span>🐱</span>
             <span className="pixel text-[7px] text-[#3A2A40] font-bold">SWEET</span>
             <span>🛏️</span>
+          </div>
+        )}
+        {id === "ruangguru" && (
+          <div className="flex gap-2 text-sm items-center opacity-75">
+            <span>🎒</span>
+            <span className="pixel text-[7px] text-[#22385C] font-bold">LEARN</span>
+            <span>🎓</span>
           </div>
         )}
       </div>
@@ -630,7 +642,12 @@ function ResultScreen({
   onRetake: () => void;
   onHome: () => void;
 }) {
-  const [customText, setCustomText] = useState("★ PIXELSNAP · " + new Date().toLocaleDateString() + " ★");
+  const [customText, setCustomText] = useState(() => {
+    if (frame === "ruangguru") {
+      return "★ RUANGGURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
+    }
+    return "★ PIXELSNAP · " + new Date().toLocaleDateString() + " ★";
+  });
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error" | "demo">("idle");
 
   // MASUKKAN URL GOOGLE APPS SCRIPT WEB APP ANDA DI SINI UNTUK AKTIFKAN UPLOAD OTOMATIS
@@ -778,6 +795,7 @@ async function composeStrip(
   ctx.imageSmoothingQuality = "high";
 
   const palette: Record<FrameId, { bg: string; accent: string; title: string }> = {
+    ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANGGURU ★" },
     cafe: { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
     gameboy: { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
     bedroom: { bg: "#CFDDF0", accent: "#3A2A40", title: "♡ RETRO ROOM ♡" },
@@ -915,18 +933,60 @@ async function composeStrip(
     ctx.textBaseline = "middle";
     ctx.fillText("🐱", pad + 50 * SCALE, decY);
     ctx.fillText("🌙", W - pad - 50 * SCALE, decY);
+  } else if (frame === "ruangguru") {
+    // Ruangguru academy/school themed decorations
+    try {
+      // Draw Gacha Machine on the left
+      const gacha = await loadImg(gachaAsset);
+      const gachaH = 40 * SCALE;
+      const gachaW = (gacha.width / gacha.height) * gachaH;
+      ctx.drawImage(gacha, pad + 30 * SCALE, decY - gachaH / 2, gachaW, gachaH);
+    } catch (e) {
+      ctx.font = `${Math.round(24 * SCALE)}px sans-serif`;
+      ctx.fillText("🎒", pad + 50 * SCALE, decY);
+    }
+
+    try {
+      // Draw Flower on the right
+      const flower = await loadImg(flowerAsset);
+      const flowerH = 40 * SCALE;
+      const flowerW = (flower.width / flower.height) * flowerH;
+      ctx.drawImage(flower, W - pad - 30 * SCALE - flowerW, decY - flowerH / 2, flowerW, flowerH);
+    } catch (e) {
+      ctx.font = `${Math.round(24 * SCALE)}px sans-serif`;
+      ctx.fillText("🎓", W - pad - 50 * SCALE, decY);
+    }
   }
 
-  // draw small YODHA logo at top-left corner
+  // draw small logos in the header
   try {
-    const logo = await loadImg(yodhaLogoAsset.url);
-    const logoH = 36 * SCALE; // small height
-    const logoW = (logo.width / logo.height) * logoH;
-    const logoX = pad + 4 * SCALE;
-    const logoY = pad + (headerH - logoH) / 2;
-    ctx.drawImage(logo, logoX, logoY, logoW, logoH);
-  } catch {
-    // if logo fails to load, skip it silently
+    if (frame === "ruangguru") {
+      // Draw Ruangguru logo on the left
+      const rgLogo = await loadImg(ruangguruLogo);
+      const rgLogoH = 26 * SCALE; // slightly smaller vertical to fit cleanly
+      const rgLogoW = (rgLogo.width / rgLogo.height) * rgLogoH;
+      const rgLogoX = pad + 12 * SCALE;
+      const rgLogoY = pad + (headerH - rgLogoH) / 2;
+      ctx.drawImage(rgLogo, rgLogoX, rgLogoY, rgLogoW, rgLogoH);
+
+      // Draw Yodha logo on the right
+      const ydLogo = await loadImg(yodhaLogo);
+      const ydLogoH = 28 * SCALE;
+      const ydLogoW = (ydLogo.width / ydLogo.height) * ydLogoH;
+      const ydLogoX = W - pad - 12 * SCALE - ydLogoW;
+      const ydLogoY = pad + (headerH - ydLogoH) / 2;
+      ctx.drawImage(ydLogo, ydLogoX, ydLogoY, ydLogoW, ydLogoH);
+    } else {
+      // Draw Yodha logo on the left
+      const ydLogo = await loadImg(yodhaLogo);
+      const logoH = 36 * SCALE;
+      const logoW = (ydLogo.width / ydLogo.height) * logoH;
+      const logoX = pad + 4 * SCALE;
+      const logoY = pad + (headerH - logoH) / 2;
+      ctx.drawImage(ydLogo, logoX, logoY, logoW, logoH);
+    }
+  } catch (e) {
+    console.error("Failed to load header logos", e);
   }
 
   return canvas.toDataURL("image/png");
