@@ -39,6 +39,7 @@ const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPh
 
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
+  const [layout, setLayout] = useState<LayoutId>("3x1");
   // Frame is automatically derived from layout: 1x1 uses the official twibbon, others use ruangguru strip
   const frame: FrameId = layout === "1x1" ? "template" : "ruangguru";
   const [photos, setPhotos] = useState<string[]>([]);
