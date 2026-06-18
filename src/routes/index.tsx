@@ -4,6 +4,7 @@ import yodhaLogo from "@/assets/yodha-logo.png";
 import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
+import templateFrameAsset from "@/assets/template-frame.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,10 +19,11 @@ export const Route = createFileRoute("/")({
 });
 
 type Screen = "home" | "frame" | "shoot" | "result";
-type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru";
+type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru" | "template";
 type LayoutId = "3x1" | "3x2" | "2x1" | "1x1";
 
 const FRAMES: { id: FrameId; name: string; emoji: string; bg: string; subtitle: string }[] = [
+  { id: "template", name: "PHOTOBOOTH RESMI", emoji: "🎓", bg: "#0D3B59", subtitle: "Frame Ruangguru Official" },
   { id: "ruangguru", name: "RUANG GURU", emoji: "🏫", bg: "#D5ECF8", subtitle: "Tema Pixel Belajar" },
   { id: "cafe", name: "Cozy Cafe", emoji: "☕", bg: "var(--color-blush)", subtitle: "Sudut kafe pixel" },
   { id: "gameboy", name: "GameBoy", emoji: "🎮", bg: "var(--color-sage)", subtitle: "Layar konsol mini" },
@@ -37,7 +39,9 @@ const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPh
 
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [frame, setFrame] = useState<FrameId>("ruangguru");
+  const [frame, setFrame] = useState<FrameId>("template");
+  // If frame is 'template', force layout to 1x1 (1 photo only)
+  const effectiveLayout: LayoutId = frame === "template" ? "1x1" : layout;
   const [layout, setLayout] = useState<LayoutId>("3x1");
   const [photos, setPhotos] = useState<string[]>([]);
   const [strip, setStrip] = useState<string | null>(null);
@@ -51,7 +55,7 @@ function Photobooth() {
           <FrameScreen
             selected={frame}
             setSelected={setFrame}
-            selectedLayout={layout}
+            selectedLayout={effectiveLayout}
             setSelectedLayout={setLayout}
             onBack={() => setScreen("home")}
             onNext={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
@@ -60,7 +64,7 @@ function Photobooth() {
         {screen === "shoot" && (
           <ShootScreen
             frame={frame}
-            layout={layout}
+            layout={effectiveLayout}
             photos={photos}
             setPhotos={setPhotos}
             onDone={(stripDataUrl) => { setStrip(stripDataUrl); setScreen("result"); }}
@@ -71,7 +75,7 @@ function Photobooth() {
           <ResultScreen
             photos={photos}
             frame={frame}
-            layout={layout}
+            layout={effectiveLayout}
             strip={strip}
             setStrip={setStrip}
             onRetake={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
@@ -308,6 +312,7 @@ function FramePreview({ id, layout }: { id: FrameId; layout: LayoutId }) {
     <div className="w-full h-full p-3 flex flex-col justify-between relative select-none">
       {/* Mini Title */}
       <div className="text-center">
+        {id === "template" && <span className="pixel text-[9px] text-[#F89E1B] font-bold">🎓 RESMI</span>}
         {id === "ruangguru" && <span className="pixel text-[9px] text-[#22385C] font-bold">★ RUANG GURU</span>}
         {id === "cafe" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">☕ CAFE</span>}
         {id === "gameboy" && <span className="pixel text-[9px] text-[#3A2A40] font-bold">▶ GAMEBOY</span>}
@@ -505,7 +510,12 @@ function ShootScreen({
     setShooting(false);
     setProcessing(true);
     await wait(1900);
-    const strip = await composeStrip(captured, frame, layout);
+    let strip: string;
+    if (frame === "template") {
+      strip = await composeTemplateFrame(captured);
+    } else {
+      strip = await composeStrip(captured, frame, layout);
+    }
     setProcessing(false);
     onDone(strip);
   }, [shooting, takeShot, setPhotos, frame, layout, onDone, total]);
@@ -643,6 +653,9 @@ function ResultScreen({
   onHome: () => void;
 }) {
   const [customText, setCustomText] = useState(() => {
+    if (frame === "template") {
+      return ""; // No custom text for template frame
+    }
     if (frame === "ruangguru") {
       return "★ RUANG GURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
     }
@@ -758,6 +771,71 @@ function ResultScreen({
 /* ───────────────────────── Helpers ───────────────────────── */
 
 function wait(ms: number) { return new Promise(r => setTimeout(r, ms)); }
+
+/**
+ * compositeTemplateFrame:
+ * Draws one camera photo into the black hole area of template-frame.png,
+ * then overlays the frame PNG on top so all stickers/logos are always visible.
+ *
+ * The frame image is 1402×1122. The black photo area is approximately:
+ *   left: 230px, top: 265px, right: 1172px, bottom: 770px
+ * (measured in original 1402x1122 frame coordinates)
+ */
+async function composeTemplateFrame(photos: string[]): Promise<string> {
+  const FRAME_W = 1402;
+  const FRAME_H = 1122;
+
+  // Photo hole coordinates in original frame pixel space (black area)
+  const HOLE_LEFT   = 228;
+  const HOLE_TOP    = 265;
+  const HOLE_RIGHT  = 1174;
+  const HOLE_BOTTOM = 772;
+  const HOLE_W = HOLE_RIGHT - HOLE_LEFT;
+  const HOLE_H = HOLE_BOTTOM - HOLE_TOP;
+
+  const canvas = document.createElement("canvas");
+  canvas.width  = FRAME_W;
+  canvas.height = FRAME_H;
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
+  // 1. Fill background (dark teal matching the frame)
+  ctx.fillStyle = "#0D3B59";
+  ctx.fillRect(0, 0, FRAME_W, FRAME_H);
+
+  // 2. Draw the camera photo inside the hole (cover-crop to fill)
+  if (photos.length > 0) {
+    try {
+      const img = await loadImg(photos[0]);
+      const holeRatio = HOLE_W / HOLE_H;
+      const imgRatio  = img.width / img.height;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      if (imgRatio > holeRatio) {
+        sw = img.height * holeRatio;
+        sx = (img.width - sw) / 2;
+      } else {
+        sh = img.width / holeRatio;
+        sy = (img.height - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, HOLE_LEFT, HOLE_TOP, HOLE_W, HOLE_H);
+    } catch (e) {
+      // If photo fails, just leave hole dark
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(HOLE_LEFT, HOLE_TOP, HOLE_W, HOLE_H);
+    }
+  }
+
+  // 3. Overlay the frame image ON TOP so stickers/logos cover the photo
+  try {
+    const frameImg = await loadImg(templateFrameAsset);
+    ctx.drawImage(frameImg, 0, 0, FRAME_W, FRAME_H);
+  } catch (e) {
+    console.error("Failed to load template frame overlay", e);
+  }
+
+  return canvas.toDataURL("image/png");
+}
 
 async function composeStrip(
   photos: string[],
