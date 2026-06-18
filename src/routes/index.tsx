@@ -4,7 +4,7 @@ import yodhaLogo from "@/assets/yodha-logo.png";
 import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
-import templateFrameAsset from "@/assets/frame-benar.png";
+import templateFrameAsset from "@/assets/frame1x1.png";
 import frame2Asset from "@/assets/frame2.png";
 import frame3x1Asset1 from "@/assets/farme-3x1.png";
 import frame3x1Asset2 from "@/assets/farme2-3x1.png";
