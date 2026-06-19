@@ -5,6 +5,21 @@ import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
 import templateFrameAsset from "@/assets/frame1x1.png";
+import frame1x1Asset1 from "@/assets/frame1x1/1.png";
+import frame1x1Asset2 from "@/assets/frame1x1/2.png";
+import frame1x1Asset3 from "@/assets/frame1x1/3.png";
+import frame1x1Asset4 from "@/assets/frame1x1/4.png";
+import frame1x1Asset5 from "@/assets/frame1x1/5.png";
+import frame1x1Asset6 from "@/assets/frame1x1/6.png";
+import frame1x1Asset7 from "@/assets/frame1x1/frame2-1x1.png";
+import frame1x1Asset8 from "@/assets/frame-rg/1.png";
+import frame1x1Asset9 from "@/assets/frame-rg/2.png";
+import frame2x1Asset1 from "@/assets/frame2x1/1.png";
+import frame2x1Asset2 from "@/assets/frame2x1/2.png";
+import frame2x1Asset3 from "@/assets/frame2x1/3.png";
+import frame2x1Asset4 from "@/assets/frame2x1/4.png";
+import frame2x1Asset5 from "@/assets/frame2x1/5.png";
+import frame2x1Asset6 from "@/assets/frame2x1/6.png";
 import frame2Asset from "@/assets/frame2.png";
 import frame3x1Asset1 from "@/assets/farme-3x1.png";
 import frame3x1Asset2 from "@/assets/farme2-3x1.png";
@@ -245,6 +260,23 @@ function getVariantHoleConfig(layout: string, variant: string): HoleConfig | nul
       const h = [{ x: 89, y: 82, w: 546, h: 545 }, { x: 89, y: 747, w: 546, h: 546 }, { x: 89, y: 1412, w: 546, h: 545 }];
       return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
     }
+  } else if (layout === "2x1") {
+    const convert = (hArr: {x:number,y:number,w:number,h:number}[], baseW: number, baseH: number) => 
+      ({ w: baseW, h: baseH, holes: hArr.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) });
+
+    if (variant === "frame1") {
+      return convert([{ x: 137, y: 578, w: 451, h: 491 }, { x: 137, y: 1374, w: 451, h: 357 }], 728, 2000);
+    } else if (variant === "frame2") {
+      return convert([{ x: 110, y: 83, w: 1256, h: 1014 }, { x: 110, y: 1199, w: 1256, h: 1014 }], 1440, 2622);
+    } else if (variant === "frame3") {
+      return convert([{ x: 103, y: 68, w: 1254, h: 1013 }, { x: 113, y: 1199, w: 1244, h: 951 }], 1440, 2622);
+    } else if (variant === "frame4") {
+      return convert([{ x: 95, y: 512, w: 538, h: 651 }, { x: 95, y: 1294, w: 538, h: 358 }], 728, 2000);
+    } else if (variant === "frame5") {
+      return convert([{ x: 139, y: 563, w: 450, h: 490 }, { x: 139, y: 1363, w: 450, h: 355 }], 728, 2000);
+    } else if (variant === "frame6") {
+      return convert([{ x: 136, y: 599, w: 456, h: 497 }, { x: 136, y: 1400, w: 456, h: 362 }], 728, 2000);
+    }
   } else if (layout === "3x2") {
     const baseW = 1333, baseH = 2000;
     const convert = (hArr: {x:number,y:number,w:number,h:number}[], customH = baseH) => 
@@ -329,6 +361,27 @@ function FrameScreen({
         </div>
       </div>
 
+      {selectedLayout === "1x1" && (
+        <div className="pixel-box p-4" style={{ background: "var(--color-lavender)" }}>
+          <div className="pixel text-[10px] text-center mb-3">PILIH VARIAN FRAME 1x1</div>
+          <div className="flex flex-wrap justify-center gap-4">
+            {[
+              { id: "default", img: frame1x1Asset8 },
+              { id: "frame1", img: frame1x1Asset9 },
+              { id: "frame2", img: frame1x1Asset7 }
+            ].map((v) => (
+              <button 
+                key={v.id}
+                className={`flex flex-col items-center gap-2 transition-all ${variant === v.id ? "scale-110 drop-shadow-lg ring-2 ring-[var(--color-ink)]" : "opacity-70 hover:opacity-100"}`}
+                onClick={() => setVariant(v.id)}
+              >
+                <img src={v.img} className="w-16 h-20 object-cover bg-white border-[3px] border-[var(--color-ink)]" alt={v.id} />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {selectedLayout === "3x1" && (
         <div className="pixel-box p-4" style={{ background: "var(--color-lavender)" }}>
           <div className="pixel text-[10px] text-center mb-3">PILIH VARIAN FRAME 3x1</div>
@@ -373,6 +426,39 @@ function FrameScreen({
             >
               <img src={frame3x1Asset5} className="w-12 h-36 object-cover bg-white border-[3px] border-[var(--color-ink)]" alt="Frame 3" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {selectedLayout === "2x1" && (
+        <div className="pixel-box p-4" style={{ background: "var(--color-lavender)" }}>
+          <div className="pixel text-[10px] text-center mb-3">PILIH VARIAN FRAME 2x1</div>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button 
+              className={`flex flex-col items-center gap-2 transition-all ${variant === "default" ? "scale-110 drop-shadow-lg ring-2 ring-[var(--color-ink)]" : "opacity-70 hover:opacity-100"}`}
+              onClick={() => setVariant("default")}
+            >
+              <div className="w-12 h-24 bg-white border-[3px] border-[var(--color-ink)] flex flex-col justify-around p-1 gap-1">
+                <div className="w-full h-full bg-[var(--color-ink)] opacity-10"></div>
+                <div className="w-full h-full bg-[var(--color-ink)] opacity-10"></div>
+              </div>
+            </button>
+            {[
+              { id: "frame1", img: frame2x1Asset1 },
+              { id: "frame2", img: frame2x1Asset2 },
+              { id: "frame3", img: frame2x1Asset3 },
+              { id: "frame4", img: frame2x1Asset4 },
+              { id: "frame5", img: frame2x1Asset5 },
+              { id: "frame6", img: frame2x1Asset6 }
+            ].map((v) => (
+              <button 
+                key={v.id}
+                className={`flex flex-col items-center gap-2 transition-all ${variant === v.id ? "scale-110 drop-shadow-lg ring-2 ring-[var(--color-ink)]" : "opacity-70 hover:opacity-100"}`}
+                onClick={() => setVariant(v.id)}
+              >
+                <img src={v.img} className="w-12 h-24 object-cover bg-white border-[3px] border-[var(--color-ink)]" alt={v.id} />
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -628,11 +714,13 @@ function ShootScreen({
     await wait(1900);
     let strip: string;
     if (frame === "template") {
-      strip = await composeTemplateFrame(captured);
+      strip = await composeTemplateFrame(captured, variant);
     } else if (layout === "3x2") {
       strip = await compose3x2Frame(captured, variant);
     } else if (layout === "3x1" && variant !== "default") {
       strip = await compose3x1Variant(captured, variant);
+    } else if (layout === "2x1" && variant !== "default") {
+      strip = await compose2x1Variant(captured, variant);
     } else {
       strip = await composeStrip(captured, frame, layout);
     }
@@ -659,7 +747,7 @@ function ShootScreen({
             <span className="pixel text-[9px]">LIVE</span>
           </div>
 
-          <div className={`relative w-full overflow-hidden ${frame === "template" ? "aspect-[1402/1122]" : "aspect-[4/3]"}`} style={{ background: "var(--color-ink)" }}>
+          <div className={`relative w-full overflow-hidden ${frame === "template" ? (["default", "frame1"].includes(variant) ? "aspect-[1080/1350]" : "aspect-[1350/1080]") : "aspect-[4/3]"}`} style={{ background: "var(--color-ink)" }}>
             {error ? (
               <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm" style={{ background: "var(--color-card)" }}>
                 <div>
@@ -680,7 +768,11 @@ function ShootScreen({
             {/* frame overlay */}
             {frame === "template" && (
               <img 
-                src={templateFrameAsset} 
+                src={
+                  variant === "frame1" ? frame1x1Asset9 :
+                  variant === "frame2" ? frame1x1Asset7 :
+                  frame1x1Asset8
+                } 
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10" 
                 alt="frame overlay" 
               />
@@ -747,6 +839,14 @@ function ShootScreen({
             
             if (variantConfig) {
               const overlaySrc = 
+                layout === "2x1" ? (
+                  variant === "frame1" ? frame2x1Asset1 :
+                  variant === "frame2" ? frame2x1Asset2 :
+                  variant === "frame3" ? frame2x1Asset3 :
+                  variant === "frame4" ? frame2x1Asset4 :
+                  variant === "frame5" ? frame2x1Asset5 :
+                  frame2x1Asset6
+                ) :
                 layout === "3x2" ? (
                   variant === "frame2" ? frame3x2Asset2 :
                   variant === "frame3" ? frame3x2Asset3 :
@@ -939,9 +1039,10 @@ function wait(ms: number) { return new Promise(r => setTimeout(r, ms)); }
  * Step 1: Draw photo scaled to fill the full canvas (cover-crop).
  * Step 2: Draw frame-benar.png on top — transparent hole reveals photo.
  */
-async function composeTemplateFrame(photos: string[]): Promise<string> {
-  const FRAME_W = 1402;
-  const FRAME_H = 1122;
+async function composeTemplateFrame(photos: string[], variant: string = "default"): Promise<string> {
+  const isPortrait = ["default", "frame1"].includes(variant);
+  const FRAME_W = isPortrait ? 1080 : 1350;
+  const FRAME_H = isPortrait ? 1350 : 1080;
 
   const canvas = document.createElement("canvas");
   canvas.width  = FRAME_W;
@@ -979,10 +1080,76 @@ async function composeTemplateFrame(photos: string[]): Promise<string> {
   // STEP 2: Overlay frame-benar.png on top.
   // frame-benar.png has a transparent hole — photo shows through perfectly (true twibbon).
   try {
-    const frameImg = await loadImg(templateFrameAsset);
+    const frameImg = await loadImg(
+      variant === "frame1" ? frame1x1Asset9 :
+      variant === "frame2" ? frame1x1Asset7 :
+      frame1x1Asset8
+    );
     ctx.drawImage(frameImg, 0, 0, FRAME_W, FRAME_H);
   } catch (e) {
     console.error("Failed to load template frame overlay", e);
+  }
+
+  return canvas.toDataURL("image/png");
+}
+
+async function compose2x1Variant(photos: string[], variant: string): Promise<string> {
+  const assetUrl = 
+    variant === "frame1" ? frame2x1Asset1 :
+    variant === "frame2" ? frame2x1Asset2 :
+    variant === "frame3" ? frame2x1Asset3 :
+    variant === "frame4" ? frame2x1Asset4 :
+    variant === "frame5" ? frame2x1Asset5 :
+    frame2x1Asset6;
+
+  const config = getVariantHoleConfig("2x1", variant);
+  if (!config) return "";
+
+  const FRAME_W = config.w;
+  const FRAME_H = config.h;
+  const canvas = document.createElement("canvas");
+  canvas.width = FRAME_W;
+  canvas.height = FRAME_H;
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
+  // Use hole config to draw photos
+  if (config) {
+    for (let i = 0; i < photos.length; i++) {
+      if (!config.holes[i]) break;
+      const h = config.holes[i];
+      const hx = (h.left / 100) * FRAME_W;
+      const hy = (h.top / 100) * FRAME_H;
+      const hw = (h.width / 100) * FRAME_W;
+      const hh = (h.height / 100) * FRAME_H;
+
+      try {
+        const img = await loadImg(photos[i]);
+        const holeRatio = hw / hh;
+        const imgRatio = img.width / img.height;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > holeRatio) {
+          sw = img.height * holeRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / holeRatio;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, hx, hy, hw, hh);
+      } catch (e) {
+        ctx.fillStyle = "#3A2A40";
+        ctx.fillRect(hx, hy, hw, hh);
+      }
+    }
+  }
+
+  // Draw overlay
+  try {
+    const frameImg = await loadImg(assetUrl);
+    ctx.drawImage(frameImg, 0, 0, FRAME_W, FRAME_H);
+  } catch (e) {
+    console.error("Failed to load 2x1 variant overlay", e);
   }
 
   return canvas.toDataURL("image/png");

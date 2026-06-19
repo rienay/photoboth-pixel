@@ -62,8 +62,8 @@ function analyze(filename) {
 }
 
 async function main() {
-  for (let i = 2; i <= 9; i++) {
-    await analyze(`src/assets/frame/${i}.png`);
+  for (let i = 1; i <= 6; i++) {
+    await analyze(`src/assets/frame2x1/${i}.png`);
   }
 }
 
