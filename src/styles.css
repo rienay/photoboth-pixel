@@ -170,3 +170,24 @@
 
 @keyframes walk { 0%,100%{transform:translateX(0)} 50%{transform:translateX(2px)} }
 .walk { animation: walk 240ms steps(2,end) infinite; }
+
+/* ── Print styles ── */
+@media print {
+  body {
+    background: white !important;
+    background-image: none !important;
+  }
+  header, footer, button, aside, .speech, .pixel-box:not(.print-target) {
+    display: none !important;
+  }
+}
+
+/* ── Countdown number (no background, large pulse) ── */
+@keyframes countdown-pulse {
+  0%   { transform: scale(1.2); opacity: 0; }
+  15%  { transform: scale(1);   opacity: 1; }
+  80%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+.countdown-number { animation: countdown-pulse 0.65s ease-out forwards; }
+
