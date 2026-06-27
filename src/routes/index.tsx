@@ -287,6 +287,9 @@ function Photobooth() {
           }
         }}
         isAdmin={screen === "admin"}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={toggleFullscreen}
+        showFullscreenBtn={screen !== "shoot"}
       />
       <div className="w-full max-w-4xl flex-1 flex items-center justify-center py-4 sm:py-8">
         {screen === "home" && (
@@ -356,7 +359,19 @@ function Photobooth() {
 
 /* ───────────────────────── Header / Footer ───────────────────────── */
 
-function Header({ onLogoClick, isAdmin }: { onLogoClick?: () => void; isAdmin?: boolean }) {
+function Header({
+  onLogoClick,
+  isAdmin,
+  isFullscreen,
+  onToggleFullscreen,
+  showFullscreenBtn,
+}: {
+  onLogoClick?: () => void;
+  isAdmin?: boolean;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
+  showFullscreenBtn?: boolean;
+}) {
   return (
     <header className="w-full max-w-5xl flex items-center justify-between gap-4 mb-2">
       <div className="flex items-center gap-3">
@@ -387,6 +402,17 @@ function Header({ onLogoClick, isAdmin }: { onLogoClick?: () => void; isAdmin?: 
           </p>
         </div>
       </div>
+      {showFullscreenBtn && onToggleFullscreen && (
+        <button
+          onClick={onToggleFullscreen}
+          title={isFullscreen ? "Keluar Layar Penuh (F11)" : "Layar Penuh (F11)"}
+          className="pixel-btn-powder flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+          style={{ fontSize: "0.65rem", padding: "8px 12px" }}
+        >
+          <span>{isFullscreen ? "⊠" : " ⊡"}</span>
+          <span className="hidden sm:inline">{isFullscreen ? "KELUAR PENUH" : "LAYAR PENUH"}</span>
+        </button>
+      )}
     </header>
   );
 }
