@@ -603,7 +603,7 @@ function FrameScreen({
         <div className="speech inline-block mb-4">
           <p className="pixel text-xs">PILIH UKURAN FOTO!</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="flex flex-wrap justify-center gap-4 w-full">
           {availableLayouts.map((l) => {
             const active = selectedLayout === l.id;
             return (
@@ -619,7 +619,7 @@ function FrameScreen({
                     setVariant("default");
                   }
                 }}
-                className="pixel-box p-4 flex flex-col items-center justify-between text-center transition-transform w-full min-h-[160px]"
+                className="pixel-box p-4 flex flex-col items-center justify-between text-center transition-transform min-h-[160px] w-[calc(50%-8px)] sm:w-[180px] shrink-0"
                 style={{
                   background: active ? "var(--color-butter)" : "var(--color-card)",
                   transform: active ? "translate(-2px,-2px)" : undefined,
