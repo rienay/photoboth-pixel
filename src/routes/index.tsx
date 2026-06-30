@@ -1179,17 +1179,38 @@ function ResultScreen({
     const { sheets, w, h } = printInfo;
     const sheetWidth = (layout === "3x1" || layout === "2x1" || layout === "1x1") ? w * 2 : w;
     const sheetHeight = h;
-    
-    // Create an offscreen iframe with standard dimensions
-    const iframe = document.createElement("iframe");
-    iframe.style.position = "absolute";
-    iframe.style.left = "-9999px";
-    iframe.style.top = "-9999px";
-    iframe.style.width = "800px";
-    iframe.style.height = "1200px";
-    iframe.style.border = "0";
-    iframe.name = "print-frame";
-    document.body.appendChild(iframe);
+
+    const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+
+    let printTargetDoc: Document | null = null;
+    let printWindow: Window | null = null;
+    let iframe: HTMLIFrameElement | null = null;
+
+    if (isMobileOrTablet) {
+      printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        alert("Gagal membuka halaman cetak. Pastikan pop-up diperbolehkan di browser tablet Anda.");
+        return;
+      }
+      printTargetDoc = printWindow.document;
+    } else {
+      // Create an offscreen iframe with standard dimensions for Desktop
+      iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.left = "-9999px";
+      iframe.style.top = "-9999px";
+      iframe.style.width = "800px";
+      iframe.style.height = "1200px";
+      iframe.style.border = "0";
+      iframe.name = "print-frame";
+      document.body.appendChild(iframe);
+      printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
+    }
+
+    if (!printTargetDoc) {
+      if (iframe) document.body.removeChild(iframe);
+      return;
+    }
 
     let pagesContent = "";
 
@@ -1234,33 +1255,32 @@ function ResultScreen({
       }
     }
 
-    const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
-    if (!iframeDoc) {
-      document.body.removeChild(iframe);
-      return;
-    }
+    // Listener to remove iframe after printing is done/canceled (Desktop only)
+    let handleMessage: ((event: MessageEvent) => void) | null = null;
+    let cleanupTimeout: any = null;
 
-    // Listener to remove iframe after printing is done/canceled
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data && event.data.type === "print-complete") {
-        clearTimeout(cleanupTimeout);
-        if (document.body.contains(iframe)) {
+    if (!isMobileOrTablet && iframe) {
+      handleMessage = (event: MessageEvent) => {
+        if (event.data && event.data.type === "print-complete") {
+          clearTimeout(cleanupTimeout);
+          if (iframe && document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+          if (handleMessage) window.removeEventListener("message", handleMessage);
+        }
+      };
+      window.addEventListener("message", handleMessage);
+
+      // Fallback cleanup after 60 seconds
+      cleanupTimeout = setTimeout(() => {
+        if (iframe && document.body.contains(iframe)) {
           document.body.removeChild(iframe);
         }
-        window.removeEventListener("message", handleMessage);
-      }
-    };
-    window.addEventListener("message", handleMessage);
+        if (handleMessage) window.removeEventListener("message", handleMessage);
+      }, 60000);
+    }
 
-    // Fallback cleanup after 60 seconds
-    const cleanupTimeout = setTimeout(() => {
-      if (document.body.contains(iframe)) {
-        document.body.removeChild(iframe);
-      }
-      window.removeEventListener("message", handleMessage);
-    }, 60000);
-
-    iframeDoc.write(`
+    printTargetDoc.write(`
       <!DOCTYPE html>
       <html>
         <head>
@@ -1344,13 +1364,17 @@ function ResultScreen({
               }
             };
             window.onafterprint = function() {
-              window.parent.postMessage({ type: 'print-complete' }, '*');
+              if (${isMobileOrTablet}) {
+                window.close();
+              } else {
+                window.parent.postMessage({ type: 'print-complete' }, '*');
+              }
             };
           </script>
         </body>
       </html>
     `);
-    iframeDoc.close();
+    printTargetDoc.close();
   };
 
   // Progress bar width
