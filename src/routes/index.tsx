@@ -1266,6 +1266,8 @@ function ResultScreen({
               align-items: center;
               justify-content: center;
               overflow: hidden;
+              padding: 0.25cm;
+              box-sizing: border-box;
             }
             img {
               -webkit-print-color-adjust: exact;
