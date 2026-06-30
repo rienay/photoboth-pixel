@@ -562,6 +562,40 @@ function FrameScreen({
 }) {
   const printInfo = PRINT_SIZES[selectedLayout];
   const enabledTemplates = templates.filter((t) => t.layout === selectedLayout && t.enabled);
+  const availableLayouts = LAYOUTS.filter((l) => templates.some((t) => t.layout === l.id && t.enabled));
+
+  // Auto-select the first available layout if current layout has no enabled templates
+  useEffect(() => {
+    if (availableLayouts.length > 0 && !availableLayouts.some(l => l.id === selectedLayout)) {
+      const firstLayout = availableLayouts[0].id;
+      setSelectedLayout(firstLayout);
+      const enabledTs = templates.filter((t) => t.layout === firstLayout && t.enabled);
+      if (enabledTs.length > 0) {
+        const firstT = enabledTs[0];
+        setVariant(firstT.isCustom ? firstT.id : firstT.id.replace(firstLayout + "_", ""));
+      } else {
+        setVariant("default");
+      }
+    }
+  }, [availableLayouts, selectedLayout, setSelectedLayout, templates, setVariant]);
+
+  if (availableLayouts.length === 0) {
+    return (
+      <div className="w-full text-center space-y-6">
+        <div className="speech inline-block mb-4">
+          <p className="pixel text-xs">PILIH UKURAN FOTO!</p>
+        </div>
+        <div className="pixel-box p-8 bg-red-50 border-2 border-red-500 text-red-700 space-y-4">
+          <span className="text-4xl block">⚠️</span>
+          <span className="pixel text-[10px] font-bold block">SEMUA LAYOUT & FRAME TELAH DINONAKTIFKAN!</span>
+          <p className="text-xs" style={{ fontFamily: "var(--font-body)", fontSize: "1.2rem" }}>
+            Silakan buka panel Admin untuk mengaktifkan minimal satu frame.
+          </p>
+        </div>
+        <button className="pixel-btn-powder" onClick={onBack}>◀ Kembali</button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-8">
@@ -569,8 +603,8 @@ function FrameScreen({
         <div className="speech inline-block mb-4">
           <p className="pixel text-xs">PILIH UKURAN FOTO!</p>
         </div>
-        <div className="grid sm:grid-cols-4 gap-4">
-          {LAYOUTS.map((l) => {
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {availableLayouts.map((l) => {
             const active = selectedLayout === l.id;
             return (
               <button
