@@ -1239,7 +1239,7 @@ function ResultScreen({
           </style>
         </head>
         <body>
-          \${pagesContent}
+          ${pagesContent}
           <script>
             window.onload = function() {
               const imgs = Array.from(document.querySelectorAll('img'));
