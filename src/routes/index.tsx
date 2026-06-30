@@ -1142,7 +1142,9 @@ function ResultScreen({
 
   // ── Print with correct physical dimensions ────────────────────────
   const printPhoto = () => {
-    const { sheets } = printInfo;
+    const { sheets, w, h } = printInfo;
+    const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
+    const sheetHeight = h;
     
     // Create an offscreen iframe with standard dimensions
     const iframe = document.createElement("iframe");
@@ -1160,7 +1162,7 @@ function ResultScreen({
     if (layout === "3x1" || layout === "2x1") {
       // Untuk strip 5cm: cetak 2 strip berdampingan di satu lembar
       pagesContent = `
-        <div class="page" style="align-items: center; justify-content: center; display: flex; width: 100%; height: 100%;">
+        <div class="page">
           <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
           <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
         </div>
@@ -1169,7 +1171,7 @@ function ResultScreen({
       // Untuk 3x2 (grid) atau 1x1 (foto tunggal): cetak 1 gambar per halaman
       for (let i = 0; i < sheets; i++) {
         pagesContent += `
-          <div class="page" style="align-items: center; justify-content: center; display: flex; width: 100%; height: 100%;">
+          <div class="page">
             <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
           </div>
         `;
@@ -1210,21 +1212,23 @@ function ResultScreen({
           <title>Yodha-Photobooth — Cetak Foto</title>
           <style>
             @page {
-              size: auto;
+              size: ${sheetWidth}cm ${sheetHeight}cm;
               margin: 0;
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body {
-              width: 100%;
-              height: 100%;
+              width: ${sheetWidth}cm;
+              height: ${sheetHeight}cm;
               overflow: hidden;
               background: white;
             }
             .page {
-              width: 100%;
-              height: 100%;
+              width: ${sheetWidth}cm;
+              height: ${sheetHeight}cm;
               display: flex;
               flex-direction: row;
+              align-items: center;
+              justify-content: center;
               page-break-after: always;
               overflow: hidden;
               background: white;
