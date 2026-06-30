@@ -1144,13 +1144,13 @@ function ResultScreen({
   const printPhoto = () => {
     const { sheets } = printInfo;
     
-    // Create an invisible iframe
+    // Create an offscreen iframe with standard dimensions
     const iframe = document.createElement("iframe");
-    iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
+    iframe.style.position = "absolute";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "-9999px";
+    iframe.style.width = "800px";
+    iframe.style.height = "1200px";
     iframe.style.border = "0";
     iframe.name = "print-frame";
     document.body.appendChild(iframe);
@@ -1182,6 +1182,26 @@ function ResultScreen({
       return;
     }
 
+    // Listener to remove iframe after printing is done/canceled
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === "print-complete") {
+        clearTimeout(cleanupTimeout);
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+        window.removeEventListener("message", handleMessage);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+
+    // Fallback cleanup after 60 seconds
+    const cleanupTimeout = setTimeout(() => {
+      if (document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+      window.removeEventListener("message", handleMessage);
+    }, 60000);
+
     iframeDoc.write(`
       <!DOCTYPE html>
       <html>
@@ -1212,26 +1232,54 @@ function ResultScreen({
             .page:last-child {
               page-break-after: avoid;
             }
+            img {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
           </style>
         </head>
         <body>
-          ${pagesContent}
+          \${pagesContent}
           <script>
             window.onload = function() {
-              setTimeout(function() {
+              const imgs = Array.from(document.querySelectorAll('img'));
+              if (imgs.length === 0) {
                 window.print();
-              }, 500);
+              } else {
+                let loadedCount = 0;
+                const triggerPrint = () => {
+                  loadedCount++;
+                  if (loadedCount === imgs.length) {
+                    Promise.all(imgs.map(img => {
+                      if (img.decode) {
+                        return img.decode().catch(function() {});
+                      }
+                      return Promise.resolve();
+                    })).then(function() {
+                      setTimeout(function() {
+                        window.print();
+                      }, 300);
+                    });
+                  }
+                };
+                imgs.forEach(img => {
+                  if (img.complete) {
+                    triggerPrint();
+                  } else {
+                    img.onload = triggerPrint;
+                    img.onerror = triggerPrint;
+                  }
+                });
+              }
+            };
+            window.onafterprint = function() {
+              window.parent.postMessage({ type: 'print-complete' }, '*');
             };
           </script>
         </body>
       </html>
     `);
     iframeDoc.close();
-
-    // Remove the iframe after printing dialog is closed/handled (e.g. after 3 seconds)
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 3000);
   };
 
   // Progress bar width
