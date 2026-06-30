@@ -61,15 +61,15 @@ type LayoutId = "3x1" | "3x2" | "2x1" | "1x1";
 const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; label: string }> = {
   "3x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "3x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
-  "2x1": { w: 5,  h: 10, sheets: 2, label: "5×10 cm · 2 strip (1 lembar 4R)" },
-  "1x1": { w: 10, h: 10, sheets: 1, label: "10×10 cm · 1 lembar" },
+  "2x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
+  "1x1": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 2 foto (1 lembar 4R)" },
 };
 
 const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPhotos: number; desc: string; emoji: string }[] = [
   { id: "3x1", name: "Strip Vertikal", rows: 3, cols: 1, totalPhotos: 3, desc: "3 foto susun ke bawah · Cetak 5×15 cm", emoji: "🎞️" },
   { id: "3x2", name: "Grid 6 Foto",   rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm",    emoji: "🖼️" },
-  { id: "2x1", name: "Strip Pendek",  rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×10 cm", emoji: "📸" },
-  { id: "1x1", name: "Foto Tunggal",  rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid kotak · Cetak 5×5 cm",  emoji: "📷" },
+  { id: "2x1", name: "Strip Pendek",  rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
+  { id: "1x1", name: "Foto Tunggal",  rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid kotak · Cetak 10×15 cm (2 foto)",  emoji: "📷" },
 ];
 
 // Auto-reset timeout after result screen (seconds)
@@ -1169,8 +1169,18 @@ function ResultScreen({
           </div>
         </div>
       `;
+    } else if (layout === "1x1") {
+      // Untuk 1x1: cetak 2 foto bertumpuk atas-bawah dalam satu lembar 4R
+      pagesContent = `
+        <div class="page">
+          <div class="print-container" style="display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 0.5cm 0;">
+            <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+            <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+          </div>
+        </div>
+      `;
     } else {
-      // Untuk 3x2 (grid) atau 1x1 (foto tunggal): cetak 1 gambar per halaman
+      // Untuk 3x2 (grid): cetak 1 gambar per halaman
       for (let i = 0; i < sheets; i++) {
         pagesContent += `
           <div class="page">
