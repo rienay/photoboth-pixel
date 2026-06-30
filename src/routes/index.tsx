@@ -1163,8 +1163,10 @@ function ResultScreen({
       // Untuk strip 5cm: cetak 2 strip berdampingan di satu lembar
       pagesContent = `
         <div class="page">
-          <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
-          <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+          <div class="print-container">
+            <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+            <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+          </div>
         </div>
       `;
     } else {
@@ -1172,7 +1174,9 @@ function ResultScreen({
       for (let i = 0; i < sheets; i++) {
         pagesContent += `
           <div class="page">
-            <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
+            <div class="print-container">
+              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
+            </div>
           </div>
         `;
       }
@@ -1212,29 +1216,38 @@ function ResultScreen({
           <title>Yodha-Photobooth — Cetak Foto</title>
           <style>
             @page {
-              size: ${sheetWidth}cm ${sheetHeight}cm;
+              size: auto;
               margin: 0;
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body {
-              width: ${sheetWidth}cm;
-              height: ${sheetHeight}cm;
+              width: 100%;
+              height: 100%;
               overflow: hidden;
               background: white;
             }
             .page {
-              width: ${sheetWidth}cm;
-              height: ${sheetHeight}cm;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              justify-content: center;
+              width: 100%;
+              height: 100%;
+              position: relative;
               page-break-after: always;
               overflow: hidden;
               background: white;
             }
             .page:last-child {
               page-break-after: avoid;
+            }
+            .print-container {
+              position: absolute;
+              top: 0;
+              right: 0;
+              width: ${sheetWidth}cm;
+              height: ${sheetHeight}cm;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: center;
+              overflow: hidden;
             }
             img {
               -webkit-print-color-adjust: exact;
