@@ -1226,7 +1226,7 @@ function ResultScreen({
           <title>Yodha-Photobooth — Cetak Foto</title>
           <style>
             @page {
-              size: auto;
+              size: ${sheetWidth}cm ${sheetHeight}cm;
               margin: 0;
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1239,7 +1239,9 @@ function ResultScreen({
             .page {
               width: 100%;
               height: 100%;
-              position: relative;
+              display: flex;
+              align-items: center;
+              justify-content: center;
               page-break-after: always;
               overflow: hidden;
               background: white;
@@ -1248,9 +1250,6 @@ function ResultScreen({
               page-break-after: avoid;
             }
             .print-container {
-              position: absolute;
-              top: 0;
-              right: 0;
               width: ${sheetWidth}cm;
               height: ${sheetHeight}cm;
               display: flex;
@@ -1258,6 +1257,7 @@ function ResultScreen({
               align-items: center;
               justify-content: center;
               overflow: hidden;
+              box-sizing: border-box;
             }
             img {
               -webkit-print-color-adjust: exact;
