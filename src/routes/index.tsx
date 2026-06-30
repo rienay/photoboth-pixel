@@ -62,14 +62,14 @@ const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; labe
   "3x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "3x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
   "2x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
-  "1x1": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 2 foto (1 lembar 4R)" },
+  "1x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
 };
 
 const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPhotos: number; desc: string; emoji: string }[] = [
   { id: "3x1", name: "Strip Vertikal", rows: 3, cols: 1, totalPhotos: 3, desc: "3 foto susun ke bawah · Cetak 5×15 cm", emoji: "🎞️" },
   { id: "3x2", name: "Grid 6 Foto",   rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm",    emoji: "🖼️" },
   { id: "2x1", name: "Strip Pendek",  rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
-  { id: "1x1", name: "Foto Tunggal",  rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid kotak · Cetak 10×15 cm (2 foto)",  emoji: "📷" },
+  { id: "1x1", name: "Foto Tunggal",  rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid kotak · Cetak 5×15 cm (2 strip)",  emoji: "📷" },
 ];
 
 // Auto-reset timeout after result screen (seconds)
@@ -1143,7 +1143,7 @@ function ResultScreen({
   // ── Print with correct physical dimensions ────────────────────────
   const printPhoto = () => {
     const { sheets, w, h } = printInfo;
-    const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
+    const sheetWidth = (layout === "3x1" || layout === "2x1" || layout === "1x1") ? w * 2 : w;
     const sheetHeight = h;
     
     // Create an offscreen iframe with standard dimensions
@@ -1170,12 +1170,20 @@ function ResultScreen({
         </div>
       `;
     } else if (layout === "1x1") {
-      // Untuk 1x1: cetak 2 foto bertumpuk atas-bawah dalam satu lembar 4R
+      // Untuk 1x1: cetak 2 strip berdampingan, masing-masing berisi 2 foto bertumpuk atas-bawah
       pagesContent = `
         <div class="page">
-          <div class="print-container" style="display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 0.5cm 0;">
-            <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
-            <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+          <div class="print-container">
+            <!-- Strip Kiri -->
+            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:space-around; align-items:center; border-right:1px dashed #ccc; padding: 0.5cm 0;">
+              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+            </div>
+            <!-- Strip Kanan -->
+            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:space-around; align-items:center; padding: 0.5cm 0;">
+              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+            </div>
           </div>
         </div>
       `;
@@ -1226,7 +1234,7 @@ function ResultScreen({
           <title>Yodha-Photobooth — Cetak Foto</title>
           <style>
             @page {
-              size: ${sheetWidth}cm ${sheetHeight}cm;
+              size: A4 portrait;
               margin: 0;
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1239,9 +1247,7 @@ function ResultScreen({
             .page {
               width: 100%;
               height: 100%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
+              position: relative;
               page-break-after: always;
               overflow: hidden;
               background: white;
@@ -1250,6 +1256,9 @@ function ResultScreen({
               page-break-after: avoid;
             }
             .print-container {
+              position: absolute;
+              top: 0;
+              right: 0;
               width: ${sheetWidth}cm;
               height: ${sheetHeight}cm;
               display: flex;
@@ -1257,7 +1266,6 @@ function ResultScreen({
               align-items: center;
               justify-content: center;
               overflow: hidden;
-              box-sizing: border-box;
             }
             img {
               -webkit-print-color-adjust: exact;
