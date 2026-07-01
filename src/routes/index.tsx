@@ -1227,19 +1227,17 @@ function ResultScreen({
         </div>
       `;
     } else if (layout === "1x1") {
-      // Untuk 1x1: cetak 2 strip berdampingan, masing-masing berisi 2 foto bertumpuk atas-bawah
+      // Untuk 1x1: cetak 2 strip berdampingan, masing-masing berisi hanya 1 foto di tengah
       pagesContent = `
         <div class="page">
           <div class="print-container">
             <!-- Strip Kiri -->
-            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:space-around; align-items:center; border-right:1px dashed #ccc; padding: 0.5cm 0;">
-              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
-              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; border-right:1px dashed #ccc; padding: 0.5cm 0;">
+              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
             </div>
             <!-- Strip Kanan -->
-            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:space-around; align-items:center; padding: 0.5cm 0;">
-              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
-              <img src="${strip}" style="width:100%;height:45%;display:block;object-fit:contain;" />
+            <div style="width:50%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 0.5cm 0;">
+              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
             </div>
           </div>
         </div>
