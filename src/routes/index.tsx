@@ -1117,6 +1117,7 @@ function ResultScreen({
   });
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error" | "demo">("idle");
   const [autoResetSec, setAutoResetSec] = useState(AUTO_RESET_SECONDS);
+  const [printCopies, setPrintCopies] = useState(1);
   const uploadedRef = useRef<string | null>(null);
 
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrXsFW17ixX0AV-9azLznM-FXKG72NqyfecrJqOccgzXAuC6vlJAlTAtmSOumbHfZ1/exec";
@@ -1215,10 +1216,11 @@ function ResultScreen({
     }
 
     let pagesContent = "";
+    let singleSheetContent = "";
 
     if (layout === "3x1" || layout === "2x1") {
       // Untuk strip 5cm: cetak 2 strip berdampingan di satu lembar
-      pagesContent = `
+      singleSheetContent = `
         <div class="page">
           <div class="print-container">
             <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
@@ -1228,15 +1230,18 @@ function ResultScreen({
       `;
     } else {
       // Untuk 3x2 (grid) dan 1x1 (foto tunggal): cetak 1 gambar per halaman (lebar 10cm, tinggi 15cm)
-      for (let i = 0; i < sheets; i++) {
-        pagesContent += `
-          <div class="page">
-            <div class="print-container">
-              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
-            </div>
+      singleSheetContent = `
+        <div class="page">
+          <div class="print-container">
+            <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
           </div>
-        `;
-      }
+        </div>
+      `;
+    }
+
+    // Ulangi lembar cetak sebanyak jumlah rangkap yang diinput user
+    for (let c = 0; c < printCopies; c++) {
+      pagesContent += singleSheetContent;
     }
 
     // Listener to remove iframe after printing is done/canceled (Desktop only)
@@ -1418,6 +1423,44 @@ function ResultScreen({
               />
             </div>
             <span className="pixel text-[10px] font-bold text-center">SCAN QR UNTUK SIMPAN FOTO</span>
+          </div>
+
+          {/* Print Copies Selector */}
+          <div className="pixel-box p-3 w-full flex items-center justify-between gap-3" style={{ background: "var(--color-lavender)" }}>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">📄</span>
+              <span className="pixel text-[9px] font-bold">Jumlah Cetak (Rangkap)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                className="pixel-btn-powder flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                style={{ width: "32px", height: "32px", padding: 0, fontSize: "1.2rem" }}
+                onClick={() => setPrintCopies(prev => Math.max(1, prev - 1))}
+              >
+                -
+              </button>
+              <input
+                type="number"
+                min="1"
+                max="99"
+                value={printCopies}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value, 10);
+                  setPrintCopies(isNaN(val) || val < 1 ? 1 : val);
+                }}
+                className="w-12 h-8 text-center border-2 border-[var(--color-ink)] bg-white font-bold"
+                style={{ fontFamily: "var(--font-body)", fontSize: "1.2rem" }}
+              />
+              <button
+                type="button"
+                className="pixel-btn-powder flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                style={{ width: "32px", height: "32px", padding: 0, fontSize: "1.2rem" }}
+                onClick={() => setPrintCopies(prev => Math.min(99, prev + 1))}
+              >
+                +
+              </button>
+            </div>
           </div>
 
           {/* Action Buttons */}
