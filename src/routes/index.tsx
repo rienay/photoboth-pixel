@@ -1216,32 +1216,47 @@ function ResultScreen({
     }
 
     let pagesContent = "";
-    let singleSheetContent = "";
 
     if (layout === "3x1" || layout === "2x1") {
-      // Untuk strip 5cm: cetak 2 strip berdampingan di satu lembar
-      singleSheetContent = `
-        <div class="page">
-          <div class="print-container">
-            <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
-            <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
-          </div>
-        </div>
-      `;
+      // Untuk strip 5cm: cetak sesuai jumlah rangkap (printCopies) di mana satu lembar 10x15cm memuat maksimal 2 strip
+      const totalSheets = Math.ceil(printCopies / 2);
+      let remainingCopies = printCopies;
+
+      for (let s = 0; s < totalSheets; s++) {
+        if (remainingCopies >= 2) {
+          pagesContent += `
+            <div class="page">
+              <div class="print-container">
+                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+              </div>
+            </div>
+          `;
+          remainingCopies -= 2;
+        } else {
+          // Hanya ada 1 rangkap tersisa untuk lembar ini: taruh di sebelah kanan agar sejajar baki kertas printer
+          pagesContent += `
+            <div class="page">
+              <div class="print-container">
+                <div style="width:50%; height:100%;"></div>
+                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+              </div>
+            </div>
+          `;
+          remainingCopies -= 1;
+        }
+      }
     } else {
       // Untuk 3x2 (grid) dan 1x1 (foto tunggal): cetak 1 gambar per halaman (lebar 10cm, tinggi 15cm)
-      singleSheetContent = `
-        <div class="page">
-          <div class="print-container">
-            <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
+      for (let c = 0; c < printCopies; c++) {
+        pagesContent += `
+          <div class="page">
+            <div class="print-container">
+              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
+            </div>
           </div>
-        </div>
-      `;
-    }
-
-    // Ulangi lembar cetak sebanyak jumlah rangkap yang diinput user
-    for (let c = 0; c < printCopies; c++) {
-      pagesContent += singleSheetContent;
+        `;
+      }
     }
 
     // Listener to remove iframe after printing is done/canceled (Desktop only)
