@@ -1282,21 +1282,22 @@ function ResultScreen({
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
             html, body {
-              width: 100%;
-              height: 100%;
-              overflow: hidden;
               background: white;
+              margin: 0;
+              padding: 0;
             }
             .page {
-              width: 100%;
-              height: 100%;
+              width: 100vw;
+              height: 100vh;
               position: relative;
               page-break-after: always;
+              break-after: page;
               overflow: hidden;
               background: white;
             }
             .page:last-child {
               page-break-after: avoid;
+              break-after: avoid;
             }
             .print-container {
               position: absolute;
