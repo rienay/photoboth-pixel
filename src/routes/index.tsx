@@ -824,10 +824,18 @@ function ShootScreen({
           });
         } catch (err) {
           console.warn("Gagal membuka kamera pilihan, kembali ke kamera default:", err);
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
-            audio: false,
-          });
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
+              audio: false,
+            });
+          } catch (err2) {
+            console.warn("Gagal dengan resolusi ideal, mencoba kamera video basic:", err2);
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: false,
+            });
+          }
         }
         if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
         streamRef.current = stream;
