@@ -74,6 +74,41 @@ export function AdminScreen({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDevice, setSelectedDevice] = useState<string>("");
+
+  React.useEffect(() => {
+    // Request permission first to ensure labels are visible, then enumerate
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+        return navigator.mediaDevices.enumerateDevices();
+      })
+      .then((deviceList) => {
+        const videoDevs = deviceList.filter((d) => d.kind === "videoinput");
+        setDevices(videoDevs);
+        const stored = localStorage.getItem("yodha_camera_device_id") || "";
+        setSelectedDevice(stored);
+      })
+      .catch(() => {
+        navigator.mediaDevices.enumerateDevices().then((deviceList) => {
+          const videoDevs = deviceList.filter((d) => d.kind === "videoinput");
+          setDevices(videoDevs);
+          const stored = localStorage.getItem("yodha_camera_device_id") || "";
+          setSelectedDevice(stored);
+        });
+      });
+  }, []);
+
+  const handleDeviceChange = (deviceId: string) => {
+    setSelectedDevice(deviceId);
+    if (deviceId) {
+      localStorage.setItem("yodha_camera_device_id", deviceId);
+    } else {
+      localStorage.removeItem("yodha_camera_device_id");
+    }
+  };
+
   // Filter templates based on current tab
   const filteredTemplates = templates.filter((t) => t.layout === activeTab);
 
@@ -152,6 +187,34 @@ export function AdminScreen({
       </div>
 
       <div className="space-y-8">
+        {/* Camera/Webcam Settings */}
+        <div className="pixel-box p-6 space-y-4" style={{ background: "var(--color-butter)" }}>
+          <div className="pixel text-[11px] font-bold border-b-2 border-[var(--color-ink)] pb-2 mb-2 text-center">
+            ⚙️ PENGATURAN KAMERA / WEBCAM
+          </div>
+          <div className="space-y-4">
+            <p className="text-muted-foreground text-sm" style={{ fontFamily: "var(--font-body)", fontSize: "1.2rem" }}>
+              Pilih kamera atau webcam eksternal yang ingin digunakan untuk photobooth ini. Pilihan akan disimpan otomatis.
+            </p>
+            <div className="space-y-2">
+              <label className="pixel text-[9px] block">PILIH KAMERA AKTIF</label>
+              <select
+                value={selectedDevice}
+                onChange={(e) => handleDeviceChange(e.target.value)}
+                className="w-full p-2 border-2 border-[var(--color-ink)] bg-white text-sm cursor-pointer"
+                style={{ fontFamily: "var(--font-body)", fontSize: "1.2rem" }}
+              >
+                <option value="">Default (Kamera Utama / Selfie)</option>
+                {devices.map((device, idx) => (
+                  <option key={device.deviceId || idx} value={device.deviceId}>
+                    {device.label || `Kamera ${idx + 1} (${device.deviceId.substring(0, 8)}...)`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
         {/* Top: Upload Form */}
         <div className="pixel-box p-6 space-y-4" style={{ background: "var(--color-lavender)" }}>
           <div className="pixel text-[11px] font-bold border-b-2 border-[var(--color-ink)] pb-2 mb-2 text-center">

@@ -812,9 +812,23 @@ function ShootScreen({
     let cancelled = false;
     async function init() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false,
-        });
+        const selectedDeviceId = localStorage.getItem("yodha_camera_device_id");
+        let stream: MediaStream;
+        try {
+          const videoConstraints: MediaTrackConstraints = selectedDeviceId
+            ? { deviceId: { exact: selectedDeviceId }, width: { ideal: 1280 }, height: { ideal: 960 } }
+            : { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } };
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: videoConstraints,
+            audio: false,
+          });
+        } catch (err) {
+          console.warn("Gagal membuka kamera pilihan, kembali ke kamera default:", err);
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 } },
+            audio: false,
+          });
+        }
         if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
         streamRef.current = stream;
         if (videoRef.current) {
