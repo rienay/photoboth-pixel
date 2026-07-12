@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AdminScreen, Template } from "@/components/AdminScreen";
 import { TemplateDB, CustomTemplate } from "@/lib/db";
-import yodhaLogo from "@/assets/yodha-logo.png";
+import yodhaLogo from "@/assets/yodha.png";
+import arthanaLogo from "@/assets/arthana.png";
 import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
@@ -380,7 +381,7 @@ function Header({
           className="focus:outline-none cursor-pointer hover:scale-105 active:scale-95 transition-transform relative group"
           title="Menu Admin"
         >
-          <PixelLogo />
+          <img src={yodhaLogo} alt="Yodha Logo" className="h-20 w-auto object-contain max-w-[150px]" />
           {!isAdmin && (
             <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -406,11 +407,14 @@ function Header({
         <button
           onClick={onToggleFullscreen}
           title={isFullscreen ? "Keluar Layar Penuh (F11)" : "Layar Penuh (F11)"}
-          className="pixel-btn-powder flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-          style={{ fontSize: "0.65rem", padding: "8px 12px" }}
+          className="cursor-pointer hover:scale-105 active:scale-95 transition-transform focus:outline-none"
         >
-          <span>{isFullscreen ? "⊠" : " ⊡"}</span>
-          <span className="hidden sm:inline">{isFullscreen ? "KELUAR PENUH" : "LAYAR PENUH"}</span>
+          <img 
+            src={arthanaLogo} 
+            alt="Arthana Logo" 
+            className="h-28 w-auto object-contain max-w-[180px] -my-6" 
+            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15)) brightness(0.6)" }} 
+          />
         </button>
       )}
     </header>
