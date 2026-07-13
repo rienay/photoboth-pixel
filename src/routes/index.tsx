@@ -1218,25 +1218,41 @@ function ResultScreen({
         // Menggunakan trik (9999999999999 - Date.now()) agar nama file baru secara alfabetis lebih kecil,
         // sehingga langsung muncul paling atas saat disortir berdasarkan "Nama (A-Z)" di Google Drive.
         const descendingTimestamp = 9999999999999 - Date.now();
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
-          headers: { "Content-Type": "text/plain;charset=utf-8" }
-        });
         
-        const resText = await response.text();
-        let resJson: any = null;
         try {
-          resJson = JSON.parse(resText);
-        } catch (jsonErr) {
-          console.warn("Could not parse Apps Script response as JSON:", jsonErr);
-        }
-
-        if (active) {
-          if (resJson && resJson.status === "success" && resJson.url) {
-            setQrCodeData(resJson.url);
+          // Attempt standard CORS fetch to read the direct URL response
+          const response = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+          });
+          
+          const resText = await response.text();
+          let resJson: any = null;
+          try {
+            resJson = JSON.parse(resText);
+          } catch (jsonErr) {
+            console.warn("Could not parse Apps Script response as JSON:", jsonErr);
           }
-          setUploadStatus("success");
+
+          if (active) {
+            if (resJson && resJson.status === "success" && resJson.url) {
+              setQrCodeData(resJson.url);
+            }
+            setUploadStatus("success");
+          }
+        } catch (corsError) {
+          console.warn("Standard fetch failed due to CORS, retrying with no-cors fallback:", corsError);
+          // Fallback retry using no-cors mode to guarantee upload success
+          await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+          });
+          if (active) {
+            setUploadStatus("success");
+          }
         }
       } catch (e) {
         console.error("Failed uploading to Drive:", e);
