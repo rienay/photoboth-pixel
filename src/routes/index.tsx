@@ -743,13 +743,13 @@ function ShootScreen({
   const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
   const effectivePreset = activeTemplate?.presetId || variant;
   const variantConfig = getVariantHoleConfig(layout, effectivePreset);
-  const overlaySrc = activeTemplate?.isCustom ? activeTemplate.img : (
+  const overlaySrc = activeTemplate?.img || (
     layout === "2x1"
       ? (effectivePreset === "frame1" ? frame2x1Asset1 : effectivePreset === "frame2" ? frame2x1Asset2 : effectivePreset === "frame3" ? frame2x1Asset3 : effectivePreset === "frame4" ? frame2x1Asset4 : effectivePreset === "frame5" ? frame2x1Asset5 : frame2x1Asset6)
       : layout === "3x2"
-      ? (effectivePreset === "frame2" ? frame3x2Asset2 : effectivePreset === "frame3" ? frame3x2Asset3 : effectivePreset === "frame4" ? frame3x2Asset4 : effectivePreset === "frame5" ? frame3x2Asset5 : effectivePreset === "frame6" ? frame3x2Asset6 : effectivePreset === "frame7" ? frame3x2Asset7 : effectivePreset === "frame8" ? frame3x2Asset8 : effectivePreset === "frame9" ? frame3x2Asset9 : frame2Asset)
+      ? (effectivePreset === "frame2" ? frame3x2Asset2 : effectivePreset === "frame3" ? frame3x2Asset3 : effectivePreset === "frame4" ? frame3x2Asset4 : effectivePreset === "frame5" ? frame3x2Asset5 : effectivePreset === "frame6" ? frame3x2Asset6 : effectivePreset === "frame7" ? frame3x2Asset7 : effectivePreset === "frame8" ? frame3x2Asset8 : effectivePreset === "frame9" ? frame3x2Asset9 : effectivePreset === "pnc2" ? pnc2Asset : effectivePreset === "pnc3" ? pnc3Asset : frame2Asset)
       : layout === "1x1"
-      ? (effectivePreset === "frame1" ? frame1x1Asset9 : effectivePreset === "frame2" ? frame1x1Asset7 : frame1x1Asset8)
+      ? (effectivePreset === "frame1" ? frame1x1Asset9 : effectivePreset === "frame2" ? frame1x1Asset7 : effectivePreset === "pnc6" ? pnc6Asset : effectivePreset === "pnc7" ? pnc7Asset : frame1x1Asset8)
       : (effectivePreset === "frame1" ? frame3x1Asset1 : effectivePreset === "frame2" ? frame3x1Asset2 : effectivePreset === "frame3" ? frame3x1Asset3 : effectivePreset === "frame4" ? frame3x1Asset4 : frame3x1Asset5)
   );
 
