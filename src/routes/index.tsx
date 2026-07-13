@@ -149,10 +149,39 @@ function useFullscreen() {
 function getDefaultTemplates(disabledIds: string[]): Template[] {
   return [
     // 1x1
+    { id: "1x1_default", name: "Ruangguru 1", layout: "1x1", img: frame1x1Asset8, isCustom: false, enabled: !disabledIds.includes("1x1_default"), presetId: "default" },
+    { id: "1x1_frame1", name: "Ruangguru 2", layout: "1x1", img: frame1x1Asset9, isCustom: false, enabled: !disabledIds.includes("1x1_frame1"), presetId: "frame1" },
+    { id: "1x1_frame2", name: "Frame 2", layout: "1x1", img: frame1x1Asset7, isCustom: false, enabled: !disabledIds.includes("1x1_frame2"), presetId: "frame2" },
     { id: "1x1_pnc6", name: "PNC 6 (4:5)", layout: "1x1", img: pnc6Asset, isCustom: false, enabled: !disabledIds.includes("1x1_pnc6"), presetId: "pnc6" },
     { id: "1x1_pnc7", name: "PNC 7 (4:5)", layout: "1x1", img: pnc7Asset, isCustom: false, enabled: !disabledIds.includes("1x1_pnc7"), presetId: "pnc7" },
+    
+    // 3x1
+    { id: "3x1_default", name: "Polos", layout: "3x1", img: "", isCustom: false, enabled: !disabledIds.includes("3x1_default"), presetId: "default" },
+    { id: "3x1_frame1", name: "Pink", layout: "3x1", img: frame3x1Asset1, isCustom: false, enabled: !disabledIds.includes("3x1_frame1"), presetId: "frame1" },
+    { id: "3x1_frame2", name: "Biru", layout: "3x1", img: frame3x1Asset2, isCustom: false, enabled: !disabledIds.includes("3x1_frame2"), presetId: "frame2" },
+    { id: "3x1_frame3", name: "Frame 1", layout: "3x1", img: frame3x1Asset3, isCustom: false, enabled: !disabledIds.includes("3x1_frame3"), presetId: "frame3" },
+    { id: "3x1_frame4", name: "Frame 2", layout: "3x1", img: frame3x1Asset4, isCustom: false, enabled: !disabledIds.includes("3x1_frame4"), presetId: "frame4" },
+    { id: "3x1_frame5", name: "Frame 3", layout: "3x1", img: frame3x1Asset5, isCustom: false, enabled: !disabledIds.includes("3x1_frame5"), presetId: "frame5" },
+
+    // 2x1
+    { id: "2x1_default", name: "Polos", layout: "2x1", img: "", isCustom: false, enabled: !disabledIds.includes("2x1_default"), presetId: "default" },
+    { id: "2x1_frame1", name: "Frame 1", layout: "2x1", img: frame2x1Asset1, isCustom: false, enabled: !disabledIds.includes("2x1_frame1"), presetId: "frame1" },
+    { id: "2x1_frame2", name: "Frame 2", layout: "2x1", img: frame2x1Asset2, isCustom: false, enabled: !disabledIds.includes("2x1_frame2"), presetId: "frame2" },
+    { id: "2x1_frame3", name: "Frame 3", layout: "2x1", img: frame2x1Asset3, isCustom: false, enabled: !disabledIds.includes("2x1_frame3"), presetId: "frame3" },
+    { id: "2x1_frame4", name: "Frame 4", layout: "2x1", img: frame2x1Asset4, isCustom: false, enabled: !disabledIds.includes("2x1_frame4"), presetId: "frame4" },
+    { id: "2x1_frame5", name: "Frame 5", layout: "2x1", img: frame2x1Asset5, isCustom: false, enabled: !disabledIds.includes("2x1_frame5"), presetId: "frame5" },
+    { id: "2x1_frame6", name: "Frame 6", layout: "2x1", img: frame2x1Asset6, isCustom: false, enabled: !disabledIds.includes("2x1_frame6"), presetId: "frame6" },
 
     // 3x2
+    { id: "3x2_default", name: "Default", layout: "3x2", img: frame2Asset, isCustom: false, enabled: !disabledIds.includes("3x2_default"), presetId: "default" },
+    { id: "3x2_frame2", name: "Frame 2", layout: "3x2", img: frame3x2Asset2, isCustom: false, enabled: !disabledIds.includes("3x2_frame2"), presetId: "frame2" },
+    { id: "3x2_frame3", name: "Frame 3", layout: "3x2", img: frame3x2Asset3, isCustom: false, enabled: !disabledIds.includes("3x2_frame3"), presetId: "frame3" },
+    { id: "3x2_frame4", name: "Frame 4", layout: "3x2", img: frame3x2Asset4, isCustom: false, enabled: !disabledIds.includes("3x2_frame4"), presetId: "frame4" },
+    { id: "3x2_frame5", name: "Frame 5", layout: "3x2", img: frame3x2Asset5, isCustom: false, enabled: !disabledIds.includes("3x2_frame5"), presetId: "frame5" },
+    { id: "3x2_frame6", name: "Frame 6", layout: "3x2", img: frame3x2Asset6, isCustom: false, enabled: !disabledIds.includes("3x2_frame6"), presetId: "frame6" },
+    { id: "3x2_frame7", name: "Frame 7", layout: "3x2", img: frame3x2Asset7, isCustom: false, enabled: !disabledIds.includes("3x2_frame7"), presetId: "frame7" },
+    { id: "3x2_frame8", name: "Frame 8", layout: "3x2", img: frame3x2Asset8, isCustom: false, enabled: !disabledIds.includes("3x2_frame8"), presetId: "frame8" },
+    { id: "3x2_frame9", name: "Frame 9", layout: "3x2", img: frame3x2Asset9, isCustom: false, enabled: !disabledIds.includes("3x2_frame9"), presetId: "frame9" },
     { id: "3x2_pnc2", name: "PNC 2 (4:5)", layout: "3x2", img: pnc2Asset, isCustom: false, enabled: !disabledIds.includes("3x2_pnc2"), presetId: "pnc2" },
     { id: "3x2_pnc3", name: "PNC 3 (4:5)", layout: "3x2", img: pnc3Asset, isCustom: false, enabled: !disabledIds.includes("3x2_pnc3"), presetId: "pnc3" },
   ];
