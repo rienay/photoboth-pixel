@@ -320,6 +320,7 @@ function Photobooth() {
             setStrip={setStrip}
             onRetake={() => { setPhotos([]); setStrip(null); setScreen("shoot"); }}
             onHome={() => { setPhotos([]); setStrip(null); setScreen("home"); }}
+            templates={templates}
           />
         )}
         {screen === "admin" && (
@@ -930,7 +931,7 @@ function ShootScreen({
       {/* Template frame overlay */}
       {frame === "template" && (
         <img
-          src={variant === "frame1" ? frame1x1Asset9 : variant === "frame2" ? frame1x1Asset7 : frame1x1Asset8}
+          src={overlaySrc}
           className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
           alt="frame overlay"
         />
@@ -1105,6 +1106,7 @@ function ResultScreen({
   setStrip,
   onRetake,
   onHome,
+  templates,
 }: {
   photos: string[];
   frame: FrameId;
@@ -1114,7 +1116,11 @@ function ResultScreen({
   setStrip: (s: string) => void;
   onRetake: () => void;
   onHome: () => void;
+  templates: Template[];
 }) {
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzIDj5_bjX6VhR3w_Ml-H15AGOy0EH0vPRAMTolZ5Q3RyKyF2nufmD_6xDGlFWLb3b/exec";
+  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1wzKMyf0hSka8flzkscDy_Ex7naddMfM0?usp=sharing";
+
   const [customText, setCustomText] = useState(() => {
     if (frame === "template") return "";
     if (frame === "ruangguru") return "★ RUANG GURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
@@ -1123,10 +1129,63 @@ function ResultScreen({
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error" | "demo">("idle");
   const [autoResetSec, setAutoResetSec] = useState(AUTO_RESET_SECONDS);
   const [printCopies, setPrintCopies] = useState(1);
+  const [qrCodeData, setQrCodeData] = useState(DRIVE_FOLDER_URL);
   const uploadedRef = useRef<string | null>(null);
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrXsFW17ixX0AV-9azLznM-FXKG72NqyfecrJqOccgzXAuC6vlJAlTAtmSOumbHfZ1/exec";
-  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1wzKMyf0hSka8flzkscDy_Ex7naddMfM0?usp=sharing";
+  const [viewMode, setViewMode] = useState<"strip" | "gif">("strip");
+  const [gifPhotoIdx, setGifPhotoIdx] = useState(0);
+
+  useEffect(() => {
+    if (viewMode !== "gif" || photos.length === 0) return;
+    const interval = setInterval(() => {
+      setGifPhotoIdx(prev => (prev + 1) % photos.length);
+    }, 450);
+    return () => clearInterval(interval);
+  }, [viewMode, photos]);
+
+  const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
+  const effectivePreset = activeTemplate?.presetId || variant;
+  const overlaySrc = activeTemplate?.img || (
+    layout === "2x1"
+      ? (effectivePreset === "frame1" ? frame2x1Asset1 : effectivePreset === "frame2" ? frame2x1Asset2 : effectivePreset === "frame3" ? frame2x1Asset3 : effectivePreset === "frame4" ? frame2x1Asset4 : effectivePreset === "frame5" ? frame2x1Asset5 : frame2x1Asset6)
+      : layout === "3x2"
+      ? (effectivePreset === "frame2" ? frame3x2Asset2 : effectivePreset === "frame3" ? frame3x2Asset3 : effectivePreset === "frame4" ? frame3x2Asset4 : effectivePreset === "frame5" ? frame3x2Asset5 : effectivePreset === "frame6" ? frame3x2Asset6 : effectivePreset === "frame7" ? frame3x2Asset7 : effectivePreset === "frame8" ? frame3x2Asset8 : effectivePreset === "frame9" ? frame3x2Asset9 : effectivePreset === "pnc2" ? pnc2Asset : effectivePreset === "pnc3" ? pnc3Asset : frame2Asset)
+      : layout === "1x1"
+      ? (effectivePreset === "frame1" ? frame1x1Asset9 : effectivePreset === "frame2" ? frame1x1Asset7 : effectivePreset === "pnc6" ? pnc6Asset : effectivePreset === "pnc7" ? pnc7Asset : frame1x1Asset8)
+      : (effectivePreset === "frame1" ? frame3x1Asset1 : effectivePreset === "frame2" ? frame3x1Asset2 : effectivePreset === "frame3" ? frame3x1Asset3 : effectivePreset === "frame4" ? frame3x1Asset4 : frame3x1Asset5)
+  );
+
+  const [detectedHoles, setDetectedHoles] = useState<{ left: number; top: number; width: number; height: number }[]>([]);
+  const [overlayDimensions, setOverlayDimensions] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    async function loadAndDetect() {
+      if (!overlaySrc) return;
+      try {
+        const img = await loadImg(overlaySrc);
+        if (!active) return;
+        const holes = detectHolesFromImage(img);
+        if (holes.length > 0) {
+          const w = img.naturalWidth || img.width;
+          const h = img.naturalHeight || img.height;
+          const pctHoles = holes.map(hole => ({
+            left: (hole.x / w) * 100,
+            top: (hole.y / h) * 100,
+            width: (hole.w / w) * 100,
+            height: (hole.h / h) * 100
+          }));
+          setDetectedHoles(pctHoles);
+          setOverlayDimensions({ w, h });
+        }
+      } catch (e) {
+        console.error("Failed to detect overlay holes for GIF preview:", e);
+      }
+    }
+    loadAndDetect();
+    return () => { active = false; };
+  }, [overlaySrc]);
+
   const printInfo = PRINT_SIZES[layout];
 
   // ── Auto-reset countdown ──────────────────────────────────────────
@@ -1159,15 +1218,28 @@ function ResultScreen({
         // Menggunakan trik (9999999999999 - Date.now()) agar nama file baru secara alfabetis lebih kecil,
         // sehingga langsung muncul paling atas saat disortir berdasarkan "Nama (A-Z)" di Google Drive.
         const descendingTimestamp = 9999999999999 - Date.now();
-        await fetch(APPS_SCRIPT_URL, {
+        const response = await fetch(APPS_SCRIPT_URL, {
           method: "POST",
-          mode: "no-cors",
           body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
           headers: { "Content-Type": "text/plain;charset=utf-8" }
         });
-        if (active) setUploadStatus("success");
+        
+        const resText = await response.text();
+        let resJson: any = null;
+        try {
+          resJson = JSON.parse(resText);
+        } catch (jsonErr) {
+          console.warn("Could not parse Apps Script response as JSON:", jsonErr);
+        }
+
+        if (active) {
+          if (resJson && resJson.status === "success" && resJson.url) {
+            setQrCodeData(resJson.url);
+          }
+          setUploadStatus("success");
+        }
       } catch (e) {
-        console.error(e);
+        console.error("Failed uploading to Drive:", e);
         uploadedRef.current = null; // Reset on error to allow retry
         if (active) setUploadStatus("error");
       }
@@ -1412,12 +1484,91 @@ function ResultScreen({
       </div>
 
       <div className="w-full grid md:grid-cols-2 gap-8 items-start">
-        {/* Strip preview */}
-        <div className="flex justify-center">
-          <div className="pixel-box p-4 overflow-hidden" style={{ background: "var(--color-blush)" }}>
-            <div className="pixel text-[10px] text-center mb-3">★ FOTO KAMU ★</div>
-            <div className="overflow-hidden" style={{ background: "var(--color-ink)", padding: "6px" }}>
-              <img src={strip} alt="strip foto" className="slot-out block w-56 sm:w-64 max-w-full" style={{ imageRendering: "pixelated" }} />
+        {/* Strip / GIF preview */}
+        <div className="flex flex-col items-center">
+          {/* Tab Selection */}
+          <div className="flex gap-2 mb-4 w-full justify-center">
+            <button
+              onClick={() => setViewMode("strip")}
+              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${
+                viewMode === "strip"
+                  ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
+                  : "bg-white hover:bg-slate-50"
+              }`}
+            >
+              🎞️ Strip Foto
+            </button>
+            <button
+              onClick={() => setViewMode("gif")}
+              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${
+                viewMode === "gif"
+                  ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
+                  : "bg-white hover:bg-slate-50"
+              }`}
+            >
+              🎬 Live GIF (Loop)
+            </button>
+          </div>
+
+          <div className="pixel-box p-4 overflow-hidden w-full max-w-[320px]" style={{ background: "var(--color-blush)" }}>
+            <div className="pixel text-[10px] text-center mb-3">
+              {viewMode === "strip" ? "★ FOTO STRIP ★" : "🎬 LIVE PHOTO GIF ★"}
+            </div>
+            
+            <div className="overflow-hidden relative flex justify-center" style={{ background: "var(--color-ink)", padding: "6px" }}>
+              {viewMode === "strip" ? (
+                <img
+                  src={strip}
+                  alt="strip foto"
+                  className="slot-out block w-full max-w-[260px] object-contain"
+                  style={{ imageRendering: "pixelated" }}
+                />
+              ) : (
+                <div
+                  className="relative w-full max-w-[260px] overflow-hidden"
+                  style={{
+                    aspectRatio: overlayDimensions ? `${overlayDimensions.w} / ${overlayDimensions.h}` : "4 / 5",
+                    background: "#1a1a2e"
+                  }}
+                >
+                  <img
+                    src={overlaySrc}
+                    className="absolute inset-0 w-full h-full pointer-events-none z-20"
+                    alt="frame overlay"
+                  />
+                  {detectedHoles.length > 0 ? (
+                    detectedHoles.map((h, i) => (
+                      <div
+                        key={i}
+                        className="absolute overflow-hidden z-10 flex items-center justify-center"
+                        style={{
+                          left: `${h.left}%`,
+                          top: `${h.top}%`,
+                          width: `${h.width}%`,
+                          height: `${h.height}%`,
+                          background: "#2a2a4a"
+                        }}
+                      >
+                        <img
+                          src={photos[gifPhotoIdx]}
+                          className="w-full h-full object-cover"
+                          style={{ transform: "scaleX(-1)" }}
+                          alt=""
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <img
+                        src={photos[gifPhotoIdx]}
+                        className="w-full h-full object-cover"
+                        style={{ transform: "scaleX(-1)" }}
+                        alt=""
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="pixel text-[9px] text-center mt-3">YODHA-PHOTOBOOTH ©</div>
           </div>
@@ -1438,7 +1589,7 @@ function ResultScreen({
           <div className="pixel-box p-4 flex flex-col items-center gap-3 w-full" style={{ background: "var(--color-card)" }}>
             <div className="pixel-box p-2 bg-white border-2 border-[#3A2A40] shadow-[3px_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center shrink-0">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(DRIVE_FOLDER_URL)}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrCodeData)}`}
                 alt="QR Code Google Drive"
                 className="w-44 h-44"
               />
