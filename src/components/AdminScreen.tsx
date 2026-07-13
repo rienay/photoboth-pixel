@@ -348,7 +348,6 @@ export function AdminScreen({
               );
             })}
           </div>
-
           <div className="speech inline-block w-full">
             <span className="pixel text-[10px] font-bold block mb-2">
               Daftar Frame untuk {LAYOUT_LABELS[activeTab]}
