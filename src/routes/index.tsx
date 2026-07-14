@@ -1066,7 +1066,7 @@ function ShootScreen({
     }
     setShooting(false);
     setProcessing(true);
-    await wait(1900);
+    await wait(300);
     const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
     const customImg = activeTemplate?.img;
     const presetId = activeTemplate?.presetId || variant;
@@ -1312,7 +1312,7 @@ function ResultScreen({
   onHome: () => void;
   templates: Template[];
 }) {
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0-U30eR01hViR-ouFBXOmInaUGNypnonSkFw8JK73-ukeeOkNy9eU_U3R4hlkrxeZ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjEdDj58epC0wLH3pHAbzpyaM9d_ab2qYXd-7Yf2da0lxYlEuVQMKxYoozqmPVCmRS/exec";
   // Helper to upload a base64 image to Google Drive via Apps Script
   const uploadFile = async (base64: string, filename: string) => {
     try {
@@ -1367,7 +1367,7 @@ function ResultScreen({
     if (frame === "ruangguru") return "★ RUANG GURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
     return "★ YODHA-PHOTOBOOTH · " + new Date().toLocaleDateString() + " ★";
   });
-  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error" | "demo">("idle");
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading_png" | "generating_gif" | "uploading_gif" | "success" | "error" | "demo">("idle");
   const [autoResetSec, setAutoResetSec] = useState(AUTO_RESET_SECONDS);
   const [printCopies, setPrintCopies] = useState(1);
   const [qrCodeData, setQrCodeData] = useState(DRIVE_FOLDER_URL);
@@ -1445,23 +1445,13 @@ function ResultScreen({
     async function uploadBoth() {
       if (!APPS_SCRIPT_URL) { setUploadStatus("demo"); return; }
       uploadedRef.current = strip; // prevent duplicate uploads
-      setUploadStatus("uploading");
+      setUploadStatus("uploading_png");
       const descendingTimestamp = 9999999999999 - Date.now();
       try {
         const base64Data = strip.split(",")[1];
         // Upload PNG strip
         await uploadFile(base64Data, `yodha-photobooth-${descendingTimestamp}.png`);
-        // Generate GIF from photos
-        let gifDataUrl = "";
-        try {
-          gifDataUrl = await generateGifFromPhotos(photos);
-        } catch (gifErr) {
-          console.warn("GIF generation failed:", gifErr);
-        }
-        if (gifDataUrl) {
-          const gifBase64 = gifDataUrl.split(",")[1];
-          await uploadFile(gifBase64, `yodha-photobooth-${descendingTimestamp}.gif`);
-        }
+        
         if (active) setUploadStatus("success");
       } catch (e) {
         console.error("Failed uploading to Drive:", e);
@@ -1709,89 +1699,17 @@ function ResultScreen({
       </div>
 
       <div className="w-full grid md:grid-cols-2 gap-8 items-start">
-        {/* Strip / GIF preview */}
+        {/* Strip preview */}
         <div className="flex flex-col items-center">
-          {/* Tab Selection */}
-          <div className="flex gap-2 mb-4 w-full justify-center">
-            <button
-              onClick={() => setViewMode("strip")}
-              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${viewMode === "strip"
-                ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
-                : "bg-white hover:bg-slate-50"
-                }`}
-            >
-              🎞️ Strip Foto
-            </button>
-            <button
-              onClick={() => setViewMode("gif")}
-              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${viewMode === "gif"
-                ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
-                : "bg-white hover:bg-slate-50"
-                }`}
-            >
-              🎬 Live GIF (Loop)
-            </button>
-          </div>
-
           <div className="pixel-box p-4 overflow-hidden w-full max-w-[320px]" style={{ background: "var(--color-blush)" }}>
-            <div className="pixel text-[10px] text-center mb-3">
-              {viewMode === "strip" ? "★ FOTO STRIP ★" : "🎬 LIVE PHOTO GIF ★"}
-            </div>
-
+            <div className="pixel text-[10px] text-center mb-3">★ FOTO STRIP ★</div>
             <div className="overflow-hidden relative flex justify-center" style={{ background: "var(--color-ink)", padding: "6px" }}>
-              {viewMode === "strip" ? (
-                <img
-                  src={strip}
-                  alt="strip foto"
-                  className="slot-out block w-full max-w-[260px] object-contain"
-                  style={{ imageRendering: "pixelated" }}
-                />
-              ) : (
-                <div
-                  className="relative w-full max-w-[260px] overflow-hidden"
-                  style={{
-                    aspectRatio: overlayDimensions ? `${overlayDimensions.w} / ${overlayDimensions.h}` : "4 / 5",
-                    background: "#1a1a2e"
-                  }}
-                >
-                  <img
-                    src={overlaySrc}
-                    className="absolute inset-0 w-full h-full pointer-events-none z-20"
-                    alt="frame overlay"
-                  />
-                  {detectedHoles.length > 0 ? (
-                    detectedHoles.map((h, i) => (
-                      <div
-                        key={i}
-                        className="absolute overflow-hidden z-10 flex items-center justify-center"
-                        style={{
-                          left: `${h.left}%`,
-                          top: `${h.top}%`,
-                          width: `${h.width}%`,
-                          height: `${h.height}%`,
-                          background: "#2a2a4a"
-                        }}
-                      >
-                        <img
-                          src={photos[gifPhotoIdx]}
-                          className="w-full h-full object-cover"
-                          style={{ transform: "scaleX(-1)" }}
-                          alt=""
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                      <img
-                        src={photos[gifPhotoIdx]}
-                        className="w-full h-full object-cover"
-                        style={{ transform: "scaleX(-1)" }}
-                        alt=""
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
+              <img
+                src={strip}
+                alt="strip foto"
+                className="slot-out block w-full max-w-[260px] object-contain"
+                style={{ imageRendering: "pixelated" }}
+              />
             </div>
             <div className="pixel text-[9px] text-center mt-3">YODHA-PHOTOBOOTH ©</div>
           </div>
@@ -1885,15 +1803,21 @@ function ResultScreen({
 function wait(ms: number) { return new Promise(r => setTimeout(r, ms)); }
 
 function detectHolesFromImage(frameImg: HTMLImageElement): { x: number; y: number; w: number; h: number }[] {
+  // Scale down to max 400px for speed — holes will be scaled back up
+  const SCALE_MAX = 400;
+  const origW = frameImg.naturalWidth || frameImg.width;
+  const origH = frameImg.naturalHeight || frameImg.height;
+  const scale = Math.min(1, SCALE_MAX / Math.max(origW, origH));
+  const width = Math.round(origW * scale);
+  const height = Math.round(origH * scale);
+
   const canvas = document.createElement("canvas");
-  canvas.width = frameImg.naturalWidth || frameImg.width;
-  canvas.height = frameImg.naturalHeight || frameImg.height;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) return [];
-  ctx.drawImage(frameImg, 0, 0);
+  ctx.drawImage(frameImg, 0, 0, width, height);
 
-  const width = canvas.width;
-  const height = canvas.height;
   const imgData = ctx.getImageData(0, 0, width, height);
   const data = imgData.data;
 
@@ -1947,7 +1871,13 @@ function detectHolesFromImage(frameImg: HTMLImageElement): { x: number; y: numbe
         const w = maxX - minX + 1;
         const h = maxY - minY + 1;
         if (w >= width * 0.3 && w < width * 0.98 && h >= height * 0.05) {
-          holes.push({ x: minX, y: minY, w, h });
+          // Scale back up to original resolution
+          holes.push({
+            x: Math.round(minX / scale),
+            y: Math.round(minY / scale),
+            w: Math.round(w / scale),
+            h: Math.round(h / scale)
+          });
         }
       }
     }
