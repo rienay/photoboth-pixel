@@ -1,7 +1,7 @@
 export interface CustomTemplate {
   id: string;
   name: string;
-  layout: "3x1" | "3x2" | "2x1" | "1x1";
+  layout: "3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
   img: string; // Base64 data URL
   isCustom: true;
   enabled: boolean;

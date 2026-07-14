@@ -7,40 +7,43 @@ import arthanaLogo from "@/assets/arthana.png";
 import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
-import templateFrameAsset from "@/assets/frame1x1.png";
-import frame1x1Asset1 from "@/assets/frame1x1/1.png";
-import frame1x1Asset2 from "@/assets/frame1x1/2.png";
-import frame1x1Asset3 from "@/assets/frame1x1/3.png";
-import frame1x1Asset4 from "@/assets/frame1x1/4.png";
-import frame1x1Asset5 from "@/assets/frame1x1/5.png";
-import frame1x1Asset6 from "@/assets/frame1x1/6.png";
-import frame1x1Asset7 from "@/assets/frame1x1/frame2-1x1.png";
-import frame1x1Asset8 from "@/assets/frame-rg/1.png";
-import frame1x1Asset9 from "@/assets/frame-rg/2.png";
-import frame2x1Asset1 from "@/assets/frame2x1/1.png";
-import frame2x1Asset2 from "@/assets/frame2x1/2.png";
-import frame2x1Asset3 from "@/assets/frame2x1/3.png";
-import frame2x1Asset4 from "@/assets/frame2x1/4.png";
-import frame2x1Asset5 from "@/assets/frame2x1/5.png";
-import frame2x1Asset6 from "@/assets/frame2x1/6.png";
-import frame2Asset from "@/assets/frame2.png";
-import frame3x1Asset1 from "@/assets/farme-3x1.png";
-import frame3x1Asset2 from "@/assets/farme2-3x1.png";
-import frame3x1Asset3 from "@/assets/1.png";
-import frame3x1Asset4 from "@/assets/2.png";
-import frame3x1Asset5 from "@/assets/3.png";
-import frame3x2Asset2 from "@/assets/frame/2.png";
-import frame3x2Asset3 from "@/assets/frame/3.png";
-import frame3x2Asset4 from "@/assets/frame/4.png";
-import frame3x2Asset5 from "@/assets/frame/5.png";
-import frame3x2Asset6 from "@/assets/frame/6.png";
-import frame3x2Asset7 from "@/assets/frame/7.png";
-import frame3x2Asset8 from "@/assets/frame/8.png";
-import frame3x2Asset9 from "@/assets/frame/9.png";
-import pnc6Asset from "@/assets/pnc/6.png";
-import pnc7Asset from "@/assets/pnc/7.png";
-import pnc2Asset from "@/assets/pnc/pnc2.png";
-import pnc3Asset from "@/assets/pnc/pnc3.png";
+// PNC assets — 1x1
+import pnc3Asset from "@/assets/pnc/1x1/ekskusif/3.png";
+import pnc4Asset from "@/assets/pnc/1x1/ekskusif/4.png";
+import pnc15Asset from "@/assets/pnc/1x1/15.png";
+
+// PNC assets — 2x1
+import pnc19Asset from "@/assets/pnc/2x1/19.png";
+
+// PNC assets — 3x2 (reguler)
+import pnc7Asset from "@/assets/pnc/3x2/7.png";
+import pnc8Asset from "@/assets/pnc/3x2/8.png";
+import pnc9Asset from "@/assets/pnc/3x2/9.png";
+import pnc10Asset from "@/assets/pnc/3x2/10.png";
+import pnc11Asset from "@/assets/pnc/3x2/11.png";
+import pnc12Asset from "@/assets/pnc/3x2/12.png";
+import pnc13Asset from "@/assets/pnc/3x2/13.png";
+import pnc14Asset from "@/assets/pnc/3x2/14.png";
+import pnc16Asset from "@/assets/pnc/3x2/16.png";
+import pnc21Asset from "@/assets/pnc/3x2/21.png";
+import pnc27Asset from "@/assets/pnc/3x2/27.png";
+import pnc28Asset from "@/assets/pnc/3x2/28.png";
+
+// PNC assets — 3x2 (eksklusif)
+import pnc5Asset from "@/assets/pnc/3x2/ekskusif/5.png";
+import pnc6Asset from "@/assets/pnc/3x2/ekskusif/6.png";
+
+// PNC assets — 2x2
+import pnc17Asset from "@/assets/pnc/2x2/17.png";
+import pnc18Asset from "@/assets/pnc/2x2/18.png";
+import pnc22Asset from "@/assets/pnc/2x2/22.png";
+import pnc23Asset from "@/assets/pnc/2x2/23.png";
+import pnc24Asset from "@/assets/pnc/2x2/24.png";
+import pnc25Asset from "@/assets/pnc/2x2/25.png";
+import pnc26Asset from "@/assets/pnc/2x2/26.png";
+
+// PNC assets — 4x2
+import pnc20Asset from "@/assets/pnc/4x2/20.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -60,22 +63,25 @@ export const Route = createFileRoute("/")({
 
 type Screen = "home" | "frame" | "shoot" | "result" | "admin";
 type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru" | "template";
-type LayoutId = "3x1" | "3x2" | "2x1" | "1x1";
+type LayoutId = "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
 
 // Physical print sizes (cm) per layout
 const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; label: string }> = {
-  "3x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "3x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
-  "2x1": { w: 5,  h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
+  "2x1": { w: 5, h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "1x1": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
+  "2x2": { w: 10, h: 12, sheets: 1, label: "10×12 cm · 1 lembar" },
+  "4x2": { w: 10, h: 20, sheets: 1, label: "10×20 cm · 1 lembar" },
 };
 
 const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPhotos: number; desc: string; emoji: string }[] = [
-  { id: "3x1", name: "Strip Vertikal", rows: 3, cols: 1, totalPhotos: 3, desc: "3 foto susun ke bawah · Cetak 5×15 cm", emoji: "🎞️" },
-  { id: "3x2", name: "Grid 6 Foto",   rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm",    emoji: "🖼️" },
-  { id: "2x1", name: "Strip Pendek",  rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
-  { id: "1x1", name: "Foto Tunggal",  rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm",  emoji: "📷" },
+  { id: "3x2", name: "Grid 6 Foto", rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm", emoji: "🖼️" },
+  { id: "2x1", name: "Strip Pendek", rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
+  { id: "1x1", name: "Foto Tunggal", rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm", emoji: "📷" },
+  { id: "2x2", name: "Grid 4 Foto", rows: 2, cols: 2, totalPhotos: 4, desc: "4 foto dua kolom · Cetak 10×12 cm", emoji: "🗒️" },
+  { id: "4x2", name: "Grid 8 Foto", rows: 4, cols: 2, totalPhotos: 8, desc: "8 foto empat baris · Cetak 10×20 cm", emoji: "🎦" },
 ];
+
 
 // Auto-reset timeout after result screen (seconds)
 const AUTO_RESET_SECONDS = 60;
@@ -94,7 +100,7 @@ function useFullscreen() {
   useEffect(() => {
     const autoFullscreen = () => {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+        document.documentElement.requestFullscreen().catch(() => { });
       }
       // Remove listeners after first interaction
       window.removeEventListener("click", autoFullscreen);
@@ -118,7 +124,7 @@ function useFullscreen() {
             // we attach a one-time click/touch listener to restore it on next interaction.
             const restore = () => {
               if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
+                document.documentElement.requestFullscreen().catch(() => { });
               }
               window.removeEventListener("click", restore);
               window.removeEventListener("touchstart", restore);
@@ -137,9 +143,9 @@ function useFullscreen() {
 
   const toggle = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   }, []);
 
@@ -147,50 +153,51 @@ function useFullscreen() {
 }
 
 function getDefaultTemplates(disabledIds: string[]): Template[] {
+  const e = (id: string) => !disabledIds.includes(id);
   return [
-    // 1x1
-    { id: "1x1_default", name: "Ruangguru 1", layout: "1x1", img: frame1x1Asset8, isCustom: false, enabled: !disabledIds.includes("1x1_default"), presetId: "default" },
-    { id: "1x1_frame1", name: "Ruangguru 2", layout: "1x1", img: frame1x1Asset9, isCustom: false, enabled: !disabledIds.includes("1x1_frame1"), presetId: "frame1" },
-    { id: "1x1_frame2", name: "Frame 2", layout: "1x1", img: frame1x1Asset7, isCustom: false, enabled: !disabledIds.includes("1x1_frame2"), presetId: "frame2" },
-    { id: "1x1_pnc6", name: "PNC 6 (4:5)", layout: "1x1", img: pnc6Asset, isCustom: false, enabled: !disabledIds.includes("1x1_pnc6"), presetId: "pnc6" },
-    { id: "1x1_pnc7", name: "PNC 7 (4:5)", layout: "1x1", img: pnc7Asset, isCustom: false, enabled: !disabledIds.includes("1x1_pnc7"), presetId: "pnc7" },
-    
-    // 3x1
-    { id: "3x1_default", name: "Polos", layout: "3x1", img: "", isCustom: false, enabled: !disabledIds.includes("3x1_default"), presetId: "default" },
-    { id: "3x1_frame1", name: "Pink", layout: "3x1", img: frame3x1Asset1, isCustom: false, enabled: !disabledIds.includes("3x1_frame1"), presetId: "frame1" },
-    { id: "3x1_frame2", name: "Biru", layout: "3x1", img: frame3x1Asset2, isCustom: false, enabled: !disabledIds.includes("3x1_frame2"), presetId: "frame2" },
-    { id: "3x1_frame3", name: "Frame 1", layout: "3x1", img: frame3x1Asset3, isCustom: false, enabled: !disabledIds.includes("3x1_frame3"), presetId: "frame3" },
-    { id: "3x1_frame4", name: "Frame 2", layout: "3x1", img: frame3x1Asset4, isCustom: false, enabled: !disabledIds.includes("3x1_frame4"), presetId: "frame4" },
-    { id: "3x1_frame5", name: "Frame 3", layout: "3x1", img: frame3x1Asset5, isCustom: false, enabled: !disabledIds.includes("3x1_frame5"), presetId: "frame5" },
+    // ── 1x1 (Foto Tunggal) ────────────────────────────────
+    { id: "1x1_pnc15", name: "PNC 15", layout: "1x1", img: pnc15Asset, isCustom: false, enabled: e("1x1_pnc15"), presetId: "pnc15" },
+    { id: "1x1_pnc3", name: "PNC 3", layout: "1x1", img: pnc3Asset, isCustom: false, enabled: e("1x1_pnc3"), presetId: "pnc3" },
+    { id: "1x1_pnc4", name: "PNC 4", layout: "1x1", img: pnc4Asset, isCustom: false, enabled: e("1x1_pnc4"), presetId: "pnc4" },
 
-    // 2x1
-    { id: "2x1_default", name: "Polos", layout: "2x1", img: "", isCustom: false, enabled: !disabledIds.includes("2x1_default"), presetId: "default" },
-    { id: "2x1_frame1", name: "Frame 1", layout: "2x1", img: frame2x1Asset1, isCustom: false, enabled: !disabledIds.includes("2x1_frame1"), presetId: "frame1" },
-    { id: "2x1_frame2", name: "Frame 2", layout: "2x1", img: frame2x1Asset2, isCustom: false, enabled: !disabledIds.includes("2x1_frame2"), presetId: "frame2" },
-    { id: "2x1_frame3", name: "Frame 3", layout: "2x1", img: frame2x1Asset3, isCustom: false, enabled: !disabledIds.includes("2x1_frame3"), presetId: "frame3" },
-    { id: "2x1_frame4", name: "Frame 4", layout: "2x1", img: frame2x1Asset4, isCustom: false, enabled: !disabledIds.includes("2x1_frame4"), presetId: "frame4" },
-    { id: "2x1_frame5", name: "Frame 5", layout: "2x1", img: frame2x1Asset5, isCustom: false, enabled: !disabledIds.includes("2x1_frame5"), presetId: "frame5" },
-    { id: "2x1_frame6", name: "Frame 6", layout: "2x1", img: frame2x1Asset6, isCustom: false, enabled: !disabledIds.includes("2x1_frame6"), presetId: "frame6" },
+    // ── 2x1 (Strip Pendek) ────────────────────────────────
+    { id: "2x1_pnc19", name: "PNC 19", layout: "2x1", img: pnc19Asset, isCustom: false, enabled: e("2x1_pnc19"), presetId: "pnc19" },
 
-    // 3x2
-    { id: "3x2_default", name: "Default", layout: "3x2", img: frame2Asset, isCustom: false, enabled: !disabledIds.includes("3x2_default"), presetId: "default" },
-    { id: "3x2_frame2", name: "Frame 2", layout: "3x2", img: frame3x2Asset2, isCustom: false, enabled: !disabledIds.includes("3x2_frame2"), presetId: "frame2" },
-    { id: "3x2_frame3", name: "Frame 3", layout: "3x2", img: frame3x2Asset3, isCustom: false, enabled: !disabledIds.includes("3x2_frame3"), presetId: "frame3" },
-    { id: "3x2_frame4", name: "Frame 4", layout: "3x2", img: frame3x2Asset4, isCustom: false, enabled: !disabledIds.includes("3x2_frame4"), presetId: "frame4" },
-    { id: "3x2_frame5", name: "Frame 5", layout: "3x2", img: frame3x2Asset5, isCustom: false, enabled: !disabledIds.includes("3x2_frame5"), presetId: "frame5" },
-    { id: "3x2_frame6", name: "Frame 6", layout: "3x2", img: frame3x2Asset6, isCustom: false, enabled: !disabledIds.includes("3x2_frame6"), presetId: "frame6" },
-    { id: "3x2_frame7", name: "Frame 7", layout: "3x2", img: frame3x2Asset7, isCustom: false, enabled: !disabledIds.includes("3x2_frame7"), presetId: "frame7" },
-    { id: "3x2_frame8", name: "Frame 8", layout: "3x2", img: frame3x2Asset8, isCustom: false, enabled: !disabledIds.includes("3x2_frame8"), presetId: "frame8" },
-    { id: "3x2_frame9", name: "Frame 9", layout: "3x2", img: frame3x2Asset9, isCustom: false, enabled: !disabledIds.includes("3x2_frame9"), presetId: "frame9" },
-    { id: "3x2_pnc2", name: "PNC 2 (4:5)", layout: "3x2", img: pnc2Asset, isCustom: false, enabled: !disabledIds.includes("3x2_pnc2"), presetId: "pnc2" },
-    { id: "3x2_pnc3", name: "PNC 3 (4:5)", layout: "3x2", img: pnc3Asset, isCustom: false, enabled: !disabledIds.includes("3x2_pnc3"), presetId: "pnc3" },
+    // ── 3x2 (Grid 6 Foto) — reguler ──────────────────────
+    { id: "3x2_pnc7", name: "PNC 7", layout: "3x2", img: pnc7Asset, isCustom: false, enabled: e("3x2_pnc7"), presetId: "pnc7" },
+    { id: "3x2_pnc8", name: "PNC 8", layout: "3x2", img: pnc8Asset, isCustom: false, enabled: e("3x2_pnc8"), presetId: "pnc8" },
+    { id: "3x2_pnc9", name: "PNC 9", layout: "3x2", img: pnc9Asset, isCustom: false, enabled: e("3x2_pnc9"), presetId: "pnc9" },
+    { id: "3x2_pnc10", name: "PNC 10", layout: "3x2", img: pnc10Asset, isCustom: false, enabled: e("3x2_pnc10"), presetId: "pnc10" },
+    { id: "3x2_pnc11", name: "PNC 11", layout: "3x2", img: pnc11Asset, isCustom: false, enabled: e("3x2_pnc11"), presetId: "pnc11" },
+    { id: "3x2_pnc12", name: "PNC 12", layout: "3x2", img: pnc12Asset, isCustom: false, enabled: e("3x2_pnc12"), presetId: "pnc12" },
+    { id: "3x2_pnc13", name: "PNC 13", layout: "3x2", img: pnc13Asset, isCustom: false, enabled: e("3x2_pnc13"), presetId: "pnc13" },
+    { id: "3x2_pnc14", name: "PNC 14", layout: "3x2", img: pnc14Asset, isCustom: false, enabled: e("3x2_pnc14"), presetId: "pnc14" },
+    { id: "3x2_pnc16", name: "PNC 16", layout: "3x2", img: pnc16Asset, isCustom: false, enabled: e("3x2_pnc16"), presetId: "pnc16" },
+    { id: "3x2_pnc21", name: "PNC 21", layout: "3x2", img: pnc21Asset, isCustom: false, enabled: e("3x2_pnc21"), presetId: "pnc21" },
+    { id: "3x2_pnc27", name: "PNC 27", layout: "3x2", img: pnc27Asset, isCustom: false, enabled: e("3x2_pnc27"), presetId: "pnc27" },
+    { id: "3x2_pnc28", name: "PNC 28", layout: "3x2", img: pnc28Asset, isCustom: false, enabled: e("3x2_pnc28"), presetId: "pnc28" },
+    // ── 3x2 (Grid 6 Foto) — eksklusif ────────────────────
+    { id: "3x2_pnc5", name: "PNC 5", layout: "3x2", img: pnc5Asset, isCustom: false, enabled: e("3x2_pnc5"), presetId: "pnc5" },
+    { id: "3x2_pnc6", name: "PNC 6", layout: "3x2", img: pnc6Asset, isCustom: false, enabled: e("3x2_pnc6"), presetId: "pnc6" },
+
+    // ── 2x2 (Grid 4 Foto) ─────────────────────────────────
+    { id: "2x2_pnc17", name: "PNC 17", layout: "2x2", img: pnc17Asset, isCustom: false, enabled: e("2x2_pnc17"), presetId: "pnc17" },
+    { id: "2x2_pnc18", name: "PNC 18", layout: "2x2", img: pnc18Asset, isCustom: false, enabled: e("2x2_pnc18"), presetId: "pnc18" },
+    { id: "2x2_pnc22", name: "PNC 22", layout: "2x2", img: pnc22Asset, isCustom: false, enabled: e("2x2_pnc22"), presetId: "pnc22" },
+    { id: "2x2_pnc23", name: "PNC 23", layout: "2x2", img: pnc23Asset, isCustom: false, enabled: e("2x2_pnc23"), presetId: "pnc23" },
+    { id: "2x2_pnc24", name: "PNC 24", layout: "2x2", img: pnc24Asset, isCustom: false, enabled: e("2x2_pnc24"), presetId: "pnc24" },
+    { id: "2x2_pnc25", name: "PNC 25", layout: "2x2", img: pnc25Asset, isCustom: false, enabled: e("2x2_pnc25"), presetId: "pnc25" },
+    { id: "2x2_pnc26", name: "PNC 26", layout: "2x2", img: pnc26Asset, isCustom: false, enabled: e("2x2_pnc26"), presetId: "pnc26" },
+
+    // ── 4x2 (Grid 8 Foto) ─────────────────────────────────
+    { id: "4x2_pnc20", name: "PNC 20", layout: "4x2", img: pnc20Asset, isCustom: false, enabled: e("4x2_pnc20"), presetId: "pnc20" },
   ];
 }
 
 /* ───────────────────────── Main Component ───────────────────────── */
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [layout, setLayout] = useState<LayoutId>("3x1");
+  const [layout, setLayout] = useState<LayoutId>("3x2");
   const [variant, setVariant] = useState<string>("default");
   const frame: FrameId = layout === "1x1" ? "template" : "ruangguru";
   const [photos, setPhotos] = useState<string[]>([]);
@@ -281,7 +288,7 @@ function Photobooth() {
 
   const ensureFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
     }
   };
 
@@ -418,11 +425,11 @@ function Header({
           title={isFullscreen ? "Keluar Layar Penuh (F11)" : "Layar Penuh (F11)"}
           className="cursor-pointer hover:scale-105 active:scale-95 transition-transform focus:outline-none"
         >
-          <img 
-            src={arthanaLogo} 
-            alt="Arthana Logo" 
-            className="h-28 w-auto object-contain max-w-[180px] -my-6" 
-            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15)) brightness(0.6)" }} 
+          <img
+            src={arthanaLogo}
+            alt="Arthana Logo"
+            className="h-28 w-auto object-contain max-w-[180px] -my-6"
+            style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15)) brightness(0.6)" }}
           />
         </button>
       )}
@@ -493,27 +500,27 @@ function getVariantHoleConfig(layout: string, variant: string): HoleConfig | nul
     if (variant === "frame1") {
       const baseW = 600, baseH = 1800;
       const h = [{ x: 78, y: 478, w: 440, h: 275 }, { x: 78, y: 863, w: 440, h: 275 }, { x: 78, y: 1248, w: 440, h: 275 }];
-      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
+      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) };
     } else if (variant === "frame2") {
       const baseW = 724, baseH = 2172;
       const h = [{ x: 49, y: 68, w: 632, h: 530 }, { x: 56, y: 670, w: 627, h: 536 }, { x: 52, y: 1265, w: 625, h: 542 }];
-      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
+      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) };
     } else if (variant === "frame3") {
       const baseW = 724, baseH = 2172;
       const h = [{ x: 63, y: 157, w: 594, h: 414 }, { x: 63, y: 746, w: 594, h: 413 }, { x: 63, y: 1334, w: 594, h: 414 }];
-      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
+      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) };
     } else if (variant === "frame4") {
       const baseW = 724, baseH = 2172;
       const h = [{ x: 56, y: 192, w: 612, h: 541 }, { x: 56, y: 790, w: 612, h: 541 }, { x: 56, y: 1388, w: 612, h: 541 }];
-      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
+      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) };
     } else if (variant === "frame5") {
       const baseW = 724, baseH = 2172;
       const h = [{ x: 89, y: 82, w: 546, h: 545 }, { x: 89, y: 747, w: 546, h: 546 }, { x: 89, y: 1412, w: 546, h: 545 }];
-      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) };
+      return { w: baseW, h: baseH, holes: h.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) };
     }
   } else if (layout === "2x1") {
-    const convert = (hArr: {x:number,y:number,w:number,h:number}[], baseW: number, baseH: number) =>
-      ({ w: baseW, h: baseH, holes: hArr.map(v => ({ left: v.x/baseW*100, top: v.y/baseH*100, width: v.w/baseW*100, height: v.h/baseH*100 })) });
+    const convert = (hArr: { x: number, y: number, w: number, h: number }[], baseW: number, baseH: number) =>
+      ({ w: baseW, h: baseH, holes: hArr.map(v => ({ left: v.x / baseW * 100, top: v.y / baseH * 100, width: v.w / baseW * 100, height: v.h / baseH * 100 })) });
 
     if (variant === "frame1") {
       return convert([{ x: 137, y: 578, w: 451, h: 491 }, { x: 137, y: 1374, w: 451, h: 357 }], 728, 2000);
@@ -530,8 +537,8 @@ function getVariantHoleConfig(layout: string, variant: string): HoleConfig | nul
     }
   } else if (layout === "3x2") {
     const baseW = 1333, baseH = 2000;
-    const convert = (hArr: {x:number,y:number,w:number,h:number}[], customH = baseH) =>
-      ({ w: baseW, h: customH, holes: hArr.map(v => ({ left: v.x/baseW*100, top: v.y/customH*100, width: v.w/baseW*100, height: v.h/customH*100 })) });
+    const convert = (hArr: { x: number, y: number, w: number, h: number }[], customH = baseH) =>
+      ({ w: baseW, h: customH, holes: hArr.map(v => ({ left: v.x / baseW * 100, top: v.y / customH * 100, width: v.w / baseW * 100, height: v.h / customH * 100 })) });
 
     if (variant === "default") {
       return convert([
@@ -576,6 +583,17 @@ function FrameScreen({
   const printInfo = PRINT_SIZES[selectedLayout];
   const enabledTemplates = templates.filter((t) => t.layout === selectedLayout && t.enabled);
   const availableLayouts = LAYOUTS.filter((l) => templates.some((t) => t.layout === l.id && t.enabled));
+  const [exSlideIdx, setExSlideIdx] = useState(0);
+  const regularScrollRef = useRef<HTMLDivElement>(null);
+  const [regularScrollIndex, setRegularScrollIndex] = useState(0);
+
+  const handleRegularScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const firstChild = container.firstElementChild as HTMLElement | null;
+    const itemWidth = firstChild ? firstChild.offsetWidth : 90;
+    const gap = 12;
+    setRegularScrollIndex(Math.round(container.scrollLeft / (itemWidth + gap)));
+  };
 
   // Auto-select the first available layout if current layout has no enabled templates
   useEffect(() => {
@@ -611,99 +629,252 @@ function FrameScreen({
   }
 
   return (
-    <div className="w-full space-y-8">
-      <div>
-        <div className="speech inline-block mb-4">
-          <p className="pixel text-xs">PILIH UKURAN FOTO!</p>
-        </div>
-        <div className="flex flex-wrap justify-center gap-4 w-full">
-          {availableLayouts.map((l) => {
-            const active = selectedLayout === l.id;
-            return (
-              <button
-                key={l.id}
-                onClick={() => {
-                  setSelectedLayout(l.id);
-                  const enabledTs = templates.filter((t) => t.layout === l.id && t.enabled);
-                  if (enabledTs.length > 0) {
-                    const firstT = enabledTs[0];
-                    setVariant(firstT.isCustom ? firstT.id : firstT.id.replace(l.id + "_", ""));
-                  } else {
-                    setVariant("default");
-                  }
-                }}
-                className="pixel-box p-4 flex flex-col items-center justify-between text-center transition-transform min-h-[160px] w-[calc(50%-8px)] sm:w-[180px] shrink-0"
-                style={{
-                  background: active ? "var(--color-butter)" : "var(--color-card)",
-                  transform: active ? "translate(-2px,-2px)" : undefined,
-                  boxShadow: active
-                    ? "0 4px 0 0 var(--color-ink),0 -4px 0 0 var(--color-ink),4px 0 0 0 var(--color-ink),-4px 0 0 0 var(--color-ink),6px 6px 0 0 var(--color-ink)"
-                    : undefined,
-                }}
-              >
-                <LayoutPreview layout={l.id} />
-                <div className="w-full mt-1">
-                  <div className="flex justify-center items-center gap-1.5 mb-1">
-                    <span className="pixel text-[11px] font-bold leading-none">{l.name}</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+    <div className="w-full flex flex-col gap-2">
+      {/* TOP: Layout selector — compact horizontal strip */}
+      <div
+        className="flex flex-row flex-nowrap gap-2 overflow-x-auto no-scrollbar"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+      >
+        {availableLayouts.map((l) => {
+          const active = selectedLayout === l.id;
+          return (
+            <button
+              key={l.id}
+              onClick={() => {
+                setSelectedLayout(l.id);
+                const enabledTs = templates.filter((t) => t.layout === l.id && t.enabled);
+                if (enabledTs.length > 0) {
+                  const firstT = enabledTs[0];
+                  setVariant(firstT.isCustom ? firstT.id : firstT.id.replace(l.id + "_", ""));
+                } else {
+                  setVariant("default");
+                }
+              }}
+              className="pixel-box flex flex-col items-center justify-center gap-1 transition-transform shrink-0"
+              style={{
+                width: "72px",
+                padding: "8px 6px",
+                background: active ? "var(--color-butter)" : "var(--color-card)",
+                transform: active ? "translate(-2px,-2px)" : undefined,
+                boxShadow: active
+                  ? "0 4px 0 0 var(--color-ink),0 -4px 0 0 var(--color-ink),4px 0 0 0 var(--color-ink),-4px 0 0 0 var(--color-ink),6px 6px 0 0 var(--color-ink)"
+                  : undefined,
+              }}
+            >
+              <LayoutPreview layout={l.id} />
+              <span className="pixel text-[8px] font-bold leading-tight text-center">{l.name}</span>
+            </button>
+          );
+        })}
       </div>
 
-      <div className="pixel-box p-4" style={{ background: "var(--color-lavender)" }}>
-        <div className="pixel text-[10px] text-center mb-3">PILIH DESAIN FRAME</div>
-        <div className="flex flex-wrap justify-center gap-4">
+
+      {/* BOTTOM: Frame selection — takes full remaining space */}
+      <div className="w-full flex flex-col gap-2">
+        {/* Frame Selection Container */}
+        <div className="w-full pixel-box p-3" style={{ background: "var(--color-lavender)" }}>
+          <div className="pixel text-[9px] text-center mb-2">PILIH DESAIN FRAME</div>
+
+
           {enabledTemplates.length === 0 ? (
-            <div className="text-center p-6 bg-red-100 border-2 border-red-500 text-red-700 text-xs pixel text-[9px] w-full">
-              ⚠️ SEMUA TEMPLATE DINONAKTIFKAN DI MENU ADMIN. SILAKAN AKTIFKAN MINIMAL SATU TEMPLATE.
+            <div className="text-center p-4 bg-red-100 border-2 border-red-500 text-red-700 pixel text-[9px] w-full">
+              ⚠️ SEMUA TEMPLATE DINONAKTIFKAN. AKTIFKAN MINIMAL SATU FRAME DI ADMIN.
             </div>
-          ) : (
-            enabledTemplates.map((t) => {
-              const templateVal = t.isCustom ? t.id : t.id.replace(selectedLayout + "_", "");
+          ) : (() => {
+            const aspectClass =
+              selectedLayout === "1x1" ? "aspect-[4/5]"
+                : selectedLayout === "2x2" ? "aspect-[1/1]"
+                  : selectedLayout === "3x2" ? "aspect-[2/3]"
+                    : selectedLayout === "4x2" ? "aspect-[1/2]"
+                      : selectedLayout === "2x1" ? "aspect-[1/2]"
+                        : "aspect-[1/3]"; // 3x1
+
+            // Thumb width — sized so ~4 frames fit in the right column
+            const thumbW =
+              selectedLayout === "3x2" || selectedLayout === "4x2" ? 70
+                : selectedLayout === "1x1" || selectedLayout === "2x2" ? 76
+                  : 58; // narrow for vertical strips
+
+            // Exclusive frames: pnc3, pnc4, pnc5, pnc6
+            const exclusivePresetIds = ["pnc3", "pnc4", "pnc5", "pnc6"];
+            const exclusiveTemplates = enabledTemplates.filter(t => exclusivePresetIds.includes(t.presetId));
+            const regularTemplates = enabledTemplates.filter(t => !exclusivePresetIds.includes(t.presetId));
+
+            const getTemplateVal = (t: Template) => t.isCustom ? t.id : t.id.replace(selectedLayout + "_", "");
+
+            // Regular frame thumb button
+            const renderThumb = (t: Template) => {
+              const templateVal = getTemplateVal(t);
               const active = variant === templateVal;
-
-              // Dimensions for previews
-              const widthClass = selectedLayout === "3x2" ? "w-16" : selectedLayout === "1x1" ? "w-16" : "w-12";
-              const heightClass = selectedLayout === "3x2" ? "h-24" : selectedLayout === "1x1" ? "h-20" : selectedLayout === "2x1" ? "h-24" : "h-36";
-
               return (
                 <button
                   key={t.id}
-                  className={`flex flex-col items-center gap-2 transition-all ${
-                    active ? "scale-110 drop-shadow-lg ring-2 ring-[var(--color-ink)]" : "opacity-70 hover:opacity-100"
-                  }`}
+                  className={`flex flex-col items-center gap-1 transition-all shrink-0 ${active ? "scale-105 drop-shadow-md" : "opacity-60 hover:opacity-100 active:scale-95"
+                    }`}
+                  style={{ width: thumbW + "px" }}
                   onClick={() => setVariant(templateVal)}
                 >
                   {t.img ? (
                     <img
                       src={t.img}
-                      className={`${widthClass} ${heightClass} object-cover bg-white border-[3px] border-[var(--color-ink)]`}
+                      className={`w-full object-cover bg-white border-[2px] ${aspectClass} ${active ? "border-[var(--color-ink)]" : "border-[var(--color-ink)]/40"
+                        }`}
                       alt={t.name}
                     />
                   ) : (
-                    // Render default Polos schematic drawing dynamically
-                    <div className={`${widthClass} ${heightClass} bg-white border-[3px] border-[var(--color-ink)] flex flex-col justify-around p-1 gap-1`}>
-                      <div className="w-full h-full bg-[var(--color-ink)] opacity-10"></div>
-                      <div className="w-full h-full bg-[var(--color-ink)] opacity-10"></div>
-                      {selectedLayout === "3x1" && (
-                        <div className="w-full h-full bg-[var(--color-ink)] opacity-10"></div>
-                      )}
+                    <div className={`w-full ${aspectClass} bg-white border-[2px] ${active ? "border-[var(--color-ink)]" : "border-[var(--color-ink)]/40"
+                      } flex flex-col justify-around p-0.5 gap-0.5`}>
+                      {Array.from({ length: LAYOUTS.find(l => l.id === selectedLayout)?.totalPhotos ?? 1 }).map((_, i) => (
+                        <div key={i} className="w-full flex-1 bg-[var(--color-ink)] opacity-10" />
+                      ))}
                     </div>
                   )}
-                  <span className="pixel text-[8px]">{t.name}</span>
+                  <span className="pixel text-[6px] text-center leading-tight w-full truncate">{t.name}</span>
                 </button>
               );
-            })
-          )}
-        </div>
-      </div>
+            };
 
-      <div className="flex gap-3 pt-2">
-        <button className="pixel-btn-powder" onClick={onBack}>◀ Kembali</button>
-        <button className="pixel-btn-sage" onClick={onNext} disabled={enabledTemplates.length === 0}>Lanjut ▶</button>
+            if (exclusiveTemplates.length > 0) {
+              const safeIdx = Math.min(exSlideIdx, exclusiveTemplates.length - 1);
+              const currentEx = exclusiveTemplates[safeIdx];
+              const exVal = getTemplateVal(currentEx);
+
+              return (
+                <div className="w-full flex flex-row gap-3 items-stretch" style={{ minHeight: 0 }}>
+                  {/* LEFT: Exclusive compact panel */}
+                  <div
+                    className="flex flex-col items-center gap-1.5 border-4 border-dashed border-yellow-400 bg-yellow-50/20 p-2 rounded-lg shrink-0"
+                    style={{ width: "28%" }}
+                  >
+                    <div className="pixel text-[7px] font-bold text-yellow-500 leading-none">👑 EKSKLUSIF</div>
+
+                    {/* Preview — compact, fixed height */}
+                    <button
+                      className={`w-full transition-all active:scale-95 ${variant === exVal ? "ring-2 ring-[var(--color-ink)]" : "opacity-85 hover:opacity-100"
+                        }`}
+                      onClick={() => setVariant(exVal)}
+                    >
+                      {currentEx.img ? (
+                        <img
+                          src={currentEx.img}
+                          className={`w-full object-cover bg-white border-[2px] border-[var(--color-ink)] ${aspectClass}`}
+                          alt={currentEx.name}
+                        />
+                      ) : (
+                        <div className={`w-full ${aspectClass} bg-white border-[2px] border-[var(--color-ink)] flex flex-col justify-around p-1 gap-0.5`}>
+                          {Array.from({ length: LAYOUTS.find(l => l.id === selectedLayout)?.totalPhotos ?? 1 }).map((_, i) => (
+                            <div key={i} className="w-full flex-1 bg-[var(--color-ink)] opacity-10" />
+                          ))}
+                        </div>
+                      )}
+                    </button>
+
+                    <span className="pixel text-[7px] font-bold text-yellow-600 text-center leading-tight truncate w-full">{currentEx.name}</span>
+
+                    {/* Dots only (no prev/next buttons to save space — swipe with dots) */}
+                    {exclusiveTemplates.length > 1 && (
+                      <div className="flex items-center gap-1.5">
+                        {exclusiveTemplates.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setExSlideIdx(i)}
+                            className={`rounded-full transition-all ${i === safeIdx ? "w-3 h-3 bg-yellow-500 scale-110" : "w-2 h-2 bg-yellow-300"
+                              }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT: Regular frames — touch scrollable, shows 4+ at once */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1">
+                    <div className="pixel text-[7px] font-bold opacity-40 text-center">▫ FRAME REGULER</div>
+                    {regularTemplates.length > 0 ? (
+                      <>
+                        <div
+                          ref={regularScrollRef}
+                          onScroll={handleRegularScroll}
+                          className="w-full overflow-x-auto flex flex-row flex-nowrap gap-2 items-end pb-1 no-scrollbar"
+                          style={{
+                            scrollbarWidth: "none",
+                            WebkitOverflowScrolling: "touch",
+                            touchAction: "pan-x",
+                            scrollSnapType: "x mandatory",
+                          }}
+                        >
+                          {regularTemplates.map(t => (
+                            <div key={t.id} style={{ scrollSnapAlign: "start" }}>
+                              {renderThumb(t)}
+                            </div>
+                          ))}
+                        </div>
+                        {/* Dots — only show if more than 4 frames */}
+                        {regularTemplates.length > 4 && (
+                          <div className="flex justify-center gap-1">
+                            {regularTemplates.map((_, idx) => (
+                              <div key={idx} className={`rounded-full transition-all ${idx === regularScrollIndex ? "w-2 h-2 bg-[var(--color-ink)]" : "w-1.5 h-1.5 bg-[var(--color-ink)]/20"
+                                }`} />
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center opacity-30 pixel text-[7px]">—</div>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            // Fallback: no exclusive frames → full-width touch scroll
+            return (
+              <>
+                <div
+                  ref={regularScrollRef}
+                  onScroll={handleRegularScroll}
+                  className="w-full overflow-x-auto flex flex-row flex-nowrap gap-3 items-end pb-1 no-scrollbar"
+                  style={{
+                    scrollbarWidth: "none",
+                    WebkitOverflowScrolling: "touch",
+                    touchAction: "pan-x",
+                    scrollSnapType: "x mandatory",
+                  }}
+                >
+                  {enabledTemplates.map(t => (
+                    <div key={t.id} style={{ scrollSnapAlign: "start" }}>
+                      {renderThumb(t)}
+                    </div>
+                  ))}
+                </div>
+                {enabledTemplates.length > 4 && (
+                  <div className="flex justify-center gap-1 mt-1">
+                    {enabledTemplates.map((_, idx) => (
+                      <div key={idx} className={`rounded-full transition-all ${idx === regularScrollIndex ? "w-2 h-2 bg-[var(--color-ink)]" : "w-1.5 h-1.5 bg-[var(--color-ink)]/20"
+                        }`} />
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Bottom Buttons */}
+        <div className="flex gap-4 w-full">
+          <button
+            className="pixel-btn-powder flex-1"
+            onClick={onBack}
+          >
+            ◀ KEMBALI
+          </button>
+          <button
+            className="pixel-btn-sage flex-1"
+            onClick={onNext}
+            disabled={enabledTemplates.length === 0}
+          >
+            LANJUT ▶
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -773,15 +944,8 @@ function ShootScreen({
   const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
   const effectivePreset = activeTemplate?.presetId || variant;
   const variantConfig = getVariantHoleConfig(layout, effectivePreset);
-  const overlaySrc = activeTemplate?.img || (
-    layout === "2x1"
-      ? (effectivePreset === "frame1" ? frame2x1Asset1 : effectivePreset === "frame2" ? frame2x1Asset2 : effectivePreset === "frame3" ? frame2x1Asset3 : effectivePreset === "frame4" ? frame2x1Asset4 : effectivePreset === "frame5" ? frame2x1Asset5 : frame2x1Asset6)
-      : layout === "3x2"
-      ? (effectivePreset === "frame2" ? frame3x2Asset2 : effectivePreset === "frame3" ? frame3x2Asset3 : effectivePreset === "frame4" ? frame3x2Asset4 : effectivePreset === "frame5" ? frame3x2Asset5 : effectivePreset === "frame6" ? frame3x2Asset6 : effectivePreset === "frame7" ? frame3x2Asset7 : effectivePreset === "frame8" ? frame3x2Asset8 : effectivePreset === "frame9" ? frame3x2Asset9 : effectivePreset === "pnc2" ? pnc2Asset : effectivePreset === "pnc3" ? pnc3Asset : frame2Asset)
-      : layout === "1x1"
-      ? (effectivePreset === "frame1" ? frame1x1Asset9 : effectivePreset === "frame2" ? frame1x1Asset7 : effectivePreset === "pnc6" ? pnc6Asset : effectivePreset === "pnc7" ? pnc7Asset : frame1x1Asset8)
-      : (effectivePreset === "frame1" ? frame3x1Asset1 : effectivePreset === "frame2" ? frame3x1Asset2 : effectivePreset === "frame3" ? frame3x1Asset3 : effectivePreset === "frame4" ? frame3x1Asset4 : frame3x1Asset5)
-  );
+  // All frames now stored directly in template img field; no legacy fallback needed
+  const overlaySrc = activeTemplate?.img || "";
 
   const [detectedHoles, setDetectedHoles] = useState<{ left: number; top: number; width: number; height: number }[]>([]);
   const [overlayDimensions, setOverlayDimensions] = useState<{ w: number; h: number } | null>(null);
@@ -1127,6 +1291,7 @@ function Corner({ pos }: { pos: "tl" | "tr" | "bl" | "br" }) {
 /* ───────────────────────── Result ───────────────────────── */
 
 function ResultScreen({
+  // ...props as before
   photos,
   frame,
   layout,
@@ -1147,8 +1312,55 @@ function ResultScreen({
   onHome: () => void;
   templates: Template[];
 }) {
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzIDj5_bjX6VhR3w_Ml-H15AGOy0EH0vPRAMTolZ5Q3RyKyF2nufmD_6xDGlFWLb3b/exec";
-  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1wzKMyf0hSka8flzkscDy_Ex7naddMfM0?usp=sharing";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0-U30eR01hViR-ouFBXOmInaUGNypnonSkFw8JK73-ukeeOkNy9eU_U3R4hlkrxeZ/exec";
+  // Helper to upload a base64 image to Google Drive via Apps Script
+  const uploadFile = async (base64: string, filename: string) => {
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ image: base64, filename }),
+        headers: { "Content-Type": "text/plain;charset=utf-8" }
+      });
+      // Dengan no-cors, kita tidak bisa membaca response dari Google.
+      // Jadi kita asumsikan sukses dan langsung set QR code ke folder:
+      setQrCodeData(DRIVE_FOLDER_URL);
+    } catch (e) {
+      console.warn("Upload error for", filename, e);
+      throw e;
+    }
+  };
+
+  // Generate animated GIF from captured photos using gifshot (CDN loaded dynamically)
+  const generateGifFromPhotos = async (photos: string[]): Promise<string> => {
+    // Return data URL of GIF
+    return new Promise((resolve, reject) => {
+      const loadGifshot = () => {
+        // @ts-ignore
+        if (window.gifshot) {
+          // @ts-ignore
+          window.gifshot.createGIF({ images: photos, gifWidth: 500, gifHeight: 500, interval: 0.5, numFrames: photos.length }, (obj: any) => {
+            if (!obj.error) resolve(obj.image);
+            else reject(obj.error);
+          });
+        } else {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/gifshot@0.3.2/gifshot.min.js";
+          script.onload = () => {
+            // @ts-ignore
+            window.gifshot.createGIF({ images: photos, gifWidth: 500, gifHeight: 500, interval: 0.5, numFrames: photos.length }, (obj: any) => {
+              if (!obj.error) resolve(obj.image);
+              else reject(obj.error);
+            });
+          };
+          script.onerror = (e) => reject(e);
+          document.body.appendChild(script);
+        }
+      };
+      loadGifshot();
+    });
+  };
+  const DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1lwRNyZWiwyWjOaAh9oDH-uA9pxWtScCN?usp=sharing";
 
   const [customText, setCustomText] = useState(() => {
     if (frame === "template") return "";
@@ -1173,16 +1385,8 @@ function ResultScreen({
   }, [viewMode, photos]);
 
   const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
-  const effectivePreset = activeTemplate?.presetId || variant;
-  const overlaySrc = activeTemplate?.img || (
-    layout === "2x1"
-      ? (effectivePreset === "frame1" ? frame2x1Asset1 : effectivePreset === "frame2" ? frame2x1Asset2 : effectivePreset === "frame3" ? frame2x1Asset3 : effectivePreset === "frame4" ? frame2x1Asset4 : effectivePreset === "frame5" ? frame2x1Asset5 : frame2x1Asset6)
-      : layout === "3x2"
-      ? (effectivePreset === "frame2" ? frame3x2Asset2 : effectivePreset === "frame3" ? frame3x2Asset3 : effectivePreset === "frame4" ? frame3x2Asset4 : effectivePreset === "frame5" ? frame3x2Asset5 : effectivePreset === "frame6" ? frame3x2Asset6 : effectivePreset === "frame7" ? frame3x2Asset7 : effectivePreset === "frame8" ? frame3x2Asset8 : effectivePreset === "frame9" ? frame3x2Asset9 : effectivePreset === "pnc2" ? pnc2Asset : effectivePreset === "pnc3" ? pnc3Asset : frame2Asset)
-      : layout === "1x1"
-      ? (effectivePreset === "frame1" ? frame1x1Asset9 : effectivePreset === "frame2" ? frame1x1Asset7 : effectivePreset === "pnc6" ? pnc6Asset : effectivePreset === "pnc7" ? pnc7Asset : frame1x1Asset8)
-      : (effectivePreset === "frame1" ? frame3x1Asset1 : effectivePreset === "frame2" ? frame3x1Asset2 : effectivePreset === "frame3" ? frame3x1Asset3 : effectivePreset === "frame4" ? frame3x1Asset4 : frame3x1Asset5)
-  );
+  // All frames are now stored directly in the template img field; no legacy fallback needed
+  const overlaySrc = activeTemplate?.img || "";
 
   const [detectedHoles, setDetectedHoles] = useState<{ left: number; top: number; width: number; height: number }[]>([]);
   const [overlayDimensions, setOverlayDimensions] = useState<{ w: number; h: number } | null>(null);
@@ -1238,60 +1442,36 @@ function ResultScreen({
     let active = true;
     if (!strip || uploadedRef.current === strip) return;
 
-    async function uploadToDrive() {
+    async function uploadBoth() {
       if (!APPS_SCRIPT_URL) { setUploadStatus("demo"); return; }
-      uploadedRef.current = strip; // Mark as uploaded/uploading to prevent duplicates
+      uploadedRef.current = strip; // prevent duplicate uploads
       setUploadStatus("uploading");
+      const descendingTimestamp = 9999999999999 - Date.now();
       try {
         const base64Data = strip.split(",")[1];
-        // Menggunakan trik (9999999999999 - Date.now()) agar nama file baru secara alfabetis lebih kecil,
-        // sehingga langsung muncul paling atas saat disortir berdasarkan "Nama (A-Z)" di Google Drive.
-        const descendingTimestamp = 9999999999999 - Date.now();
-        
+        // Upload PNG strip
+        await uploadFile(base64Data, `yodha-photobooth-${descendingTimestamp}.png`);
+        // Generate GIF from photos
+        let gifDataUrl = "";
         try {
-          // Attempt standard CORS fetch to read the direct URL response
-          const response = await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-          });
-          
-          const resText = await response.text();
-          let resJson: any = null;
-          try {
-            resJson = JSON.parse(resText);
-          } catch (jsonErr) {
-            console.warn("Could not parse Apps Script response as JSON:", jsonErr);
-          }
-
-          if (active) {
-            if (resJson && resJson.status === "success" && resJson.url) {
-              setQrCodeData(resJson.url);
-            }
-            setUploadStatus("success");
-          }
-        } catch (corsError) {
-          console.warn("Standard fetch failed due to CORS, retrying with no-cors fallback:", corsError);
-          // Fallback retry using no-cors mode to guarantee upload success
-          await fetch(APPS_SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ image: base64Data, filename: `yodha-photobooth-${descendingTimestamp}.png` }),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-          });
-          if (active) {
-            setUploadStatus("success");
-          }
+          gifDataUrl = await generateGifFromPhotos(photos);
+        } catch (gifErr) {
+          console.warn("GIF generation failed:", gifErr);
         }
+        if (gifDataUrl) {
+          const gifBase64 = gifDataUrl.split(",")[1];
+          await uploadFile(gifBase64, `yodha-photobooth-${descendingTimestamp}.gif`);
+        }
+        if (active) setUploadStatus("success");
       } catch (e) {
         console.error("Failed uploading to Drive:", e);
         uploadedRef.current = null; // Reset on error to allow retry
         if (active) setUploadStatus("error");
       }
     }
-    uploadToDrive();
+    uploadBoth();
     return () => { active = false; };
-  }, [strip]);
+  }, [strip, photos]);
 
   const download = () => {
     const a = document.createElement("a");
@@ -1535,21 +1715,19 @@ function ResultScreen({
           <div className="flex gap-2 mb-4 w-full justify-center">
             <button
               onClick={() => setViewMode("strip")}
-              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${
-                viewMode === "strip"
-                  ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
-                  : "bg-white hover:bg-slate-50"
-              }`}
+              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${viewMode === "strip"
+                ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
+                : "bg-white hover:bg-slate-50"
+                }`}
             >
               🎞️ Strip Foto
             </button>
             <button
               onClick={() => setViewMode("gif")}
-              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${
-                viewMode === "gif"
-                  ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
-                  : "bg-white hover:bg-slate-50"
-              }`}
+              className={`pixel text-[9px] px-3 py-1.5 border-2 border-[var(--color-ink)] font-bold transition-all cursor-pointer ${viewMode === "gif"
+                ? "bg-[var(--color-butter)] shadow-[2px_2px_0_0_var(--color-ink)] translate-y-[2px]"
+                : "bg-white hover:bg-slate-50"
+                }`}
             >
               🎬 Live GIF (Loop)
             </button>
@@ -1559,7 +1737,7 @@ function ResultScreen({
             <div className="pixel text-[10px] text-center mb-3">
               {viewMode === "strip" ? "★ FOTO STRIP ★" : "🎬 LIVE PHOTO GIF ★"}
             </div>
-            
+
             <div className="overflow-hidden relative flex justify-center" style={{ background: "var(--color-ink)", padding: "6px" }}>
               {viewMode === "strip" ? (
                 <img
@@ -1791,10 +1969,10 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
   const frameImg = await loadImg(
     customImg || (
       effectivePreset === "frame1" ? frame1x1Asset9 :
-      effectivePreset === "frame2" ? frame1x1Asset7 :
-      effectivePreset === "pnc6" ? pnc6Asset :
-      effectivePreset === "pnc7" ? pnc7Asset :
-      frame1x1Asset8
+        effectivePreset === "frame2" ? frame1x1Asset7 :
+          effectivePreset === "pnc6" ? pnc6Asset :
+            effectivePreset === "pnc7" ? pnc7Asset :
+              frame1x1Asset8
     )
   );
 
@@ -1802,7 +1980,7 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
   const FRAME_H = frameImg.height;
 
   const canvas = document.createElement("canvas");
-  canvas.width  = FRAME_W;
+  canvas.width = FRAME_W;
   canvas.height = FRAME_H;
   const ctx = canvas.getContext("2d")!;
   ctx.imageSmoothingEnabled = true;
@@ -1821,7 +1999,7 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
     try {
       const img = await loadImg(photos[0]);
       const holeRatio = hw / hh;
-      const imgRatio   = img.width / img.height;
+      const imgRatio = img.width / img.height;
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
       if (imgRatio > holeRatio) {
         sw = img.height * holeRatio;
@@ -1853,11 +2031,11 @@ async function compose2x1Variant(photos: string[], variant: string, customImg?: 
   const effectivePreset = presetId || variant;
   const assetUrl = customImg || (
     effectivePreset === "frame1" ? frame2x1Asset1 :
-    effectivePreset === "frame2" ? frame2x1Asset2 :
-    effectivePreset === "frame3" ? frame2x1Asset3 :
-    effectivePreset === "frame4" ? frame2x1Asset4 :
-    effectivePreset === "frame5" ? frame2x1Asset5 :
-    frame2x1Asset6
+      effectivePreset === "frame2" ? frame2x1Asset2 :
+        effectivePreset === "frame3" ? frame2x1Asset3 :
+          effectivePreset === "frame4" ? frame2x1Asset4 :
+            effectivePreset === "frame5" ? frame2x1Asset5 :
+              frame2x1Asset6
   );
 
   const frameImg = await loadImg(assetUrl);
@@ -1915,16 +2093,14 @@ async function compose3x2Frame(photos: string[], variant: string = "default", cu
   const effectivePreset = presetId || variant;
   const assetUrl = customImg || (
     effectivePreset === "frame2" ? frame3x2Asset2 :
-    effectivePreset === "frame3" ? frame3x2Asset3 :
-    effectivePreset === "frame4" ? frame3x2Asset4 :
-    effectivePreset === "frame5" ? frame3x2Asset5 :
-    effectivePreset === "frame6" ? frame3x2Asset6 :
-    effectivePreset === "frame7" ? frame3x2Asset7 :
-    effectivePreset === "frame8" ? frame3x2Asset8 :
-    effectivePreset === "frame9" ? frame3x2Asset9 :
-    effectivePreset === "pnc2" ? pnc2Asset :
-    effectivePreset === "pnc3" ? pnc3Asset :
-    frame2Asset
+      effectivePreset === "frame3" ? frame3x2Asset3 :
+        effectivePreset === "frame4" ? frame3x2Asset4 :
+          effectivePreset === "frame5" ? frame3x2Asset5 :
+            effectivePreset === "frame6" ? frame3x2Asset6 :
+              effectivePreset === "frame7" ? frame3x2Asset7 :
+                effectivePreset === "frame8" ? frame3x2Asset8 :
+                  effectivePreset === "frame9" ? frame3x2Asset9 :
+                    frame2Asset
   );
 
   const frameImg = await loadImg(assetUrl);
@@ -2062,10 +2238,10 @@ async function compose3x1Variant(photos: string[], variant: string, customImg?: 
   const effectivePreset = presetId || variant;
   const assetUrl = customImg || (
     effectivePreset === "frame1" ? frame3x1Asset1 :
-    effectivePreset === "frame2" ? frame3x1Asset2 :
-    effectivePreset === "frame3" ? frame3x1Asset3 :
-    effectivePreset === "frame4" ? frame3x1Asset4 :
-    frame3x1Asset5
+      effectivePreset === "frame2" ? frame3x1Asset2 :
+        effectivePreset === "frame3" ? frame3x1Asset3 :
+          effectivePreset === "frame4" ? frame3x1Asset4 :
+            frame3x1Asset5
   );
 
   const frameImg = await loadImg(assetUrl);
@@ -2178,11 +2354,11 @@ async function composeStrip(
   ctx.imageSmoothingQuality = "high";
 
   const palette: Record<FrameId, { bg: string; accent: string; title: string }> = {
-    template:  { bg: "#0D3B59", accent: "#F89E1B", title: "★ RESMI ★" },
+    template: { bg: "#0D3B59", accent: "#F89E1B", title: "★ RESMI ★" },
     ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANG GURU ★" },
-    cafe:      { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
-    gameboy:   { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
-    bedroom:   { bg: "#CFDDF0", accent: "#3A2A40", title: "♡ RETRO ROOM ♡" },
+    cafe: { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
+    gameboy: { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
+    bedroom: { bg: "#CFDDF0", accent: "#3A2A40", title: "♡ RETRO ROOM ♡" },
   };
   const p = palette[frame];
 

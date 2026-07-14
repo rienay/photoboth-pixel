@@ -4,7 +4,7 @@ import { CustomTemplate } from "../lib/db";
 export interface Template {
   id: string;
   name: string;
-  layout: "3x1" | "3x2" | "2x1" | "1x1";
+  layout: "3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
   img: string;
   isCustom: boolean;
   enabled: boolean;
@@ -14,7 +14,7 @@ export interface Template {
 interface AdminScreenProps {
   templates: Template[];
   onToggleTemplate: (id: string, enabled: boolean) => void;
-  onAddTemplate: (name: string, layout: "3x1" | "3x2" | "2x1" | "1x1", presetId: string, base64Img: string) => Promise<void>;
+  onAddTemplate: (name: string, layout: "3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2", presetId: string, base64Img: string) => Promise<void>;
   onDeleteTemplate: (id: string) => Promise<void>;
   onBack: () => void;
 }
@@ -22,8 +22,10 @@ interface AdminScreenProps {
 const LAYOUT_LABELS: Record<string, string> = {
   "3x1": "🎞️ Strip Vertikal (3x1)",
   "3x2": "🖼️ Grid 6 Foto (3x2)",
+  "2x2": "🔳 Grid 2x2 (2x2)",
   "2x1": "📸 Strip Pendek (2x1)",
   "1x1": "📷 Foto Tunggal (1x1)",
+  "4x2": "🎦 Grid 8 Foto (4x2)",
 };
 
 const HOLE_PRESETS: Record<string, { id: string; label: string }[]> = {
@@ -56,6 +58,12 @@ const HOLE_PRESETS: Record<string, { id: string; label: string }[]> = {
   "1x1": [
     { id: "default", label: "Default (Full Overlap)" },
   ],
+  "2x2": [
+    { id: "default", label: "Default (Full Overlap)" },
+  ],
+  "4x2": [
+    { id: "default", label: "Default (Full Overlap)" },
+  ],
 };
 
 export function AdminScreen({
@@ -65,9 +73,9 @@ export function AdminScreen({
   onDeleteTemplate,
   onBack,
 }: AdminScreenProps) {
-  const [activeTab, setActiveTab] = useState<"3x1" | "3x2" | "2x1" | "1x1">("3x1");
+  const [activeTab, setActiveTab] = useState<"3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2">("3x1");
   const [newName, setNewName] = useState("");
-  const [newLayout, setNewLayout] = useState<"3x1" | "3x2" | "2x1" | "1x1">("3x1");
+  const [newLayout, setNewLayout] = useState<"3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2">("3x1");
   const [newPreset, setNewPreset] = useState("frame1");
   const [uploadError, setUploadError] = useState("");
   const [base64Img, setBase64Img] = useState("");
@@ -113,7 +121,7 @@ export function AdminScreen({
   const filteredTemplates = templates.filter((t) => t.layout === activeTab);
 
   // Handle changing layout in upload form to reset appropriate preset
-  const handleLayoutChange = (layout: "3x1" | "3x2" | "2x1" | "1x1") => {
+  const handleLayoutChange = (layout: "3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2") => {
     setNewLayout(layout);
     setNewPreset(HOLE_PRESETS[layout][0].id);
   };
@@ -247,8 +255,10 @@ export function AdminScreen({
                   >
                     <option value="3x1">Strip Vertikal (3x1)</option>
                     <option value="3x2">Grid 6 Foto (3x2)</option>
+                    <option value="2x2">Grid 2x2 (2x2)</option>
                     <option value="2x1">Strip Pendek (2x1)</option>
                     <option value="1x1">Foto Tunggal (1x1)</option>
+                    <option value="4x2">Grid 8 Foto (4x2)</option>
                   </select>
                 </div>
 
@@ -331,7 +341,7 @@ export function AdminScreen({
         <div className="space-y-6">
           {/* Tab Headers */}
           <div className="flex flex-wrap gap-2 border-b-4 border-[var(--color-ink)] pb-1">
-            {(["3x1", "3x2", "2x1", "1x1"] as const).map((l) => {
+            {(["3x1", "3x2", "2x2", "2x1", "1x1", "4x2"] as const).map((l) => {
               const active = activeTab === l;
               return (
                 <button
