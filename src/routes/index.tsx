@@ -1068,7 +1068,7 @@ function ShootScreen({
     setProcessing(true);
     await wait(1900);
     const activeTemplate = templates.find(t => t.id === (layout + "_" + variant) || t.id === variant);
-    const customImg = activeTemplate?.isCustom ? activeTemplate.img : undefined;
+    const customImg = activeTemplate?.img;
     const presetId = activeTemplate?.presetId || variant;
 
     let strip: string;
@@ -1966,15 +1966,8 @@ function detectHolesFromImage(frameImg: HTMLImageElement): { x: number; y: numbe
 async function composeTemplateFrame(photos: string[], variant: string = "default", customImg?: string, presetId?: string): Promise<string> {
   const effectivePreset = presetId || variant;
 
-  const frameImg = await loadImg(
-    customImg || (
-      effectivePreset === "frame1" ? frame1x1Asset9 :
-        effectivePreset === "frame2" ? frame1x1Asset7 :
-          effectivePreset === "pnc6" ? pnc6Asset :
-            effectivePreset === "pnc7" ? pnc7Asset :
-              frame1x1Asset8
-    )
-  );
+  if (!customImg) throw new Error("Template image is missing!");
+  const frameImg = await loadImg(customImg);
 
   const FRAME_W = frameImg.width;
   const FRAME_H = frameImg.height;
@@ -2029,16 +2022,9 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
 
 async function compose2x1Variant(photos: string[], variant: string, customImg?: string, presetId?: string): Promise<string> {
   const effectivePreset = presetId || variant;
-  const assetUrl = customImg || (
-    effectivePreset === "frame1" ? frame2x1Asset1 :
-      effectivePreset === "frame2" ? frame2x1Asset2 :
-        effectivePreset === "frame3" ? frame2x1Asset3 :
-          effectivePreset === "frame4" ? frame2x1Asset4 :
-            effectivePreset === "frame5" ? frame2x1Asset5 :
-              frame2x1Asset6
-  );
-
-  const frameImg = await loadImg(assetUrl);
+  
+  if (!customImg) throw new Error("Template image is missing!");
+  const frameImg = await loadImg(customImg);
   const FRAME_W = frameImg.width;
   const FRAME_H = frameImg.height;
 
@@ -2091,19 +2077,9 @@ async function compose2x1Variant(photos: string[], variant: string, customImg?: 
 
 async function compose3x2Frame(photos: string[], variant: string = "default", customImg?: string, presetId?: string): Promise<string> {
   const effectivePreset = presetId || variant;
-  const assetUrl = customImg || (
-    effectivePreset === "frame2" ? frame3x2Asset2 :
-      effectivePreset === "frame3" ? frame3x2Asset3 :
-        effectivePreset === "frame4" ? frame3x2Asset4 :
-          effectivePreset === "frame5" ? frame3x2Asset5 :
-            effectivePreset === "frame6" ? frame3x2Asset6 :
-              effectivePreset === "frame7" ? frame3x2Asset7 :
-                effectivePreset === "frame8" ? frame3x2Asset8 :
-                  effectivePreset === "frame9" ? frame3x2Asset9 :
-                    frame2Asset
-  );
-
-  const frameImg = await loadImg(assetUrl);
+  
+  if (!customImg) throw new Error("Template image is missing!");
+  const frameImg = await loadImg(customImg);
   const w = frameImg.width;
   const h = frameImg.height;
 
@@ -2236,13 +2212,8 @@ async function compose3x2Frame(photos: string[], variant: string = "default", cu
 
 async function compose3x1Variant(photos: string[], variant: string, customImg?: string, presetId?: string): Promise<string> {
   const effectivePreset = presetId || variant;
-  const assetUrl = customImg || (
-    effectivePreset === "frame1" ? frame3x1Asset1 :
-      effectivePreset === "frame2" ? frame3x1Asset2 :
-        effectivePreset === "frame3" ? frame3x1Asset3 :
-          effectivePreset === "frame4" ? frame3x1Asset4 :
-            frame3x1Asset5
-  );
+  if (!customImg) throw new Error("Template image is missing!");
+  const assetUrl = customImg;
 
   const frameImg = await loadImg(assetUrl);
   const w = frameImg.width;
