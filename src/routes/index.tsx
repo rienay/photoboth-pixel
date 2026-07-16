@@ -703,7 +703,7 @@ function FrameScreen({
             const getTemplateVal = (t: Template) => t.isCustom ? t.id : t.id.replace(selectedLayout + "_", "");
 
             // Regular frame thumb button
-            const renderThumb = (t: Template) => {
+            const renderThumb = (t: Template, customWidth?: string) => {
               const templateVal = getTemplateVal(t);
               const active = variant === templateVal;
               return (
@@ -711,13 +711,13 @@ function FrameScreen({
                   key={t.id}
                   className={`flex flex-col items-center gap-1 transition-all shrink-0 ${active ? "scale-105 drop-shadow-md" : "opacity-60 hover:opacity-100 active:scale-95"
                     }`}
-                  style={{ width: thumbW + "px" }}
+                  style={{ width: customWidth || (thumbW + "px") }}
                   onClick={() => setVariant(templateVal)}
                 >
                   {t.img ? (
                     <img
                       src={t.img}
-                      className={`w-full object-cover bg-white border-[2px] ${aspectClass} ${active ? "border-[var(--color-ink)]" : "border-[var(--color-ink)]/40"
+                      className={`w-full h-auto object-contain bg-white border-[2px] ${active ? "border-[var(--color-ink)]" : "border-[var(--color-ink)]/40"
                         }`}
                       alt={t.name}
                     />
@@ -757,7 +757,7 @@ function FrameScreen({
                       {currentEx.img ? (
                         <img
                           src={currentEx.img}
-                          className={`w-full object-cover bg-white border-[2px] border-[var(--color-ink)] ${aspectClass}`}
+                          className="w-full h-auto object-contain bg-white border-[2px] border-[var(--color-ink)]"
                           alt={currentEx.name}
                         />
                       ) : (
@@ -803,8 +803,8 @@ function FrameScreen({
                           }}
                         >
                           {regularTemplates.map(t => (
-                            <div key={t.id} style={{ scrollSnapAlign: "start" }}>
-                              {renderThumb(t)}
+                            <div key={t.id} style={{ scrollSnapAlign: "start", width: "calc((100% - 24px) / 4)", flexShrink: 0 }}>
+                              {renderThumb(t, "100%")}
                             </div>
                           ))}
                         </div>
@@ -832,7 +832,7 @@ function FrameScreen({
                 <div
                   ref={regularScrollRef}
                   onScroll={handleRegularScroll}
-                  className="w-full overflow-x-auto flex flex-row flex-nowrap gap-3 items-end pb-1 no-scrollbar"
+                  className="w-full overflow-x-auto flex flex-row flex-nowrap gap-2 items-end pb-1 no-scrollbar"
                   style={{
                     scrollbarWidth: "none",
                     WebkitOverflowScrolling: "touch",
@@ -841,8 +841,8 @@ function FrameScreen({
                   }}
                 >
                   {enabledTemplates.map(t => (
-                    <div key={t.id} style={{ scrollSnapAlign: "start" }}>
-                      {renderThumb(t)}
+                    <div key={t.id} style={{ scrollSnapAlign: "start", width: "calc((100% - 24px) / 4)", flexShrink: 0 }}>
+                      {renderThumb(t, "100%")}
                     </div>
                   ))}
                 </div>
@@ -1662,7 +1662,8 @@ function ResultScreen({
             };
             window.onafterprint = function() {
               if (${isMobileOrTablet}) {
-                window.close();
+                // Jangan tutup jendela otomatis di mobile/tablet karena event 'onafterprint'
+                // sering terpicu prematur di browser mobile, menyebabkan dialog print tertutup sebelum dicetak.
               } else {
                 window.parent.postMessage({ type: 'print-complete' }, '*');
               }
