@@ -70,16 +70,16 @@ const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; labe
   "3x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
   "2x1": { w: 5, h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "1x1": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
-  "2x2": { w: 10, h: 12, sheets: 1, label: "10×12 cm · 1 lembar" },
-  "4x2": { w: 10, h: 20, sheets: 1, label: "10×20 cm · 1 lembar" },
+  "2x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
+  "4x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
 };
 
 const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPhotos: number; desc: string; emoji: string }[] = [
   { id: "3x2", name: "Grid 6 Foto", rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm", emoji: "🖼️" },
   { id: "2x1", name: "Strip Pendek", rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
   { id: "1x1", name: "Foto Tunggal", rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm", emoji: "📷" },
-  { id: "2x2", name: "Grid 4 Foto", rows: 2, cols: 2, totalPhotos: 4, desc: "4 foto dua kolom · Cetak 10×12 cm", emoji: "🗒️" },
-  { id: "4x2", name: "Grid 8 Foto", rows: 4, cols: 2, totalPhotos: 8, desc: "8 foto empat baris · Cetak 10×20 cm", emoji: "🎦" },
+  { id: "2x2", name: "Grid 4 Foto", rows: 2, cols: 2, totalPhotos: 4, desc: "4 foto dua kolom · Cetak 10×15 cm", emoji: "🗒️" },
+  { id: "4x2", name: "Grid 8 Foto", rows: 4, cols: 2, totalPhotos: 8, desc: "8 foto empat baris · Cetak 10×15 cm", emoji: "🎦" },
 ];
 
 
@@ -1475,32 +1475,20 @@ function ResultScreen({
     const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
     const sheetHeight = h;
 
-    const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-
     let printTargetDoc: Document | null = null;
-    let printWindow: Window | null = null;
     let iframe: HTMLIFrameElement | null = null;
 
-    if (isMobileOrTablet) {
-      printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        alert("Gagal membuka halaman cetak. Pastikan pop-up diperbolehkan di browser tablet Anda.");
-        return;
-      }
-      printTargetDoc = printWindow.document;
-    } else {
-      // Create an offscreen iframe with standard dimensions for Desktop
-      iframe = document.createElement("iframe");
-      iframe.style.position = "absolute";
-      iframe.style.left = "-9999px";
-      iframe.style.top = "-9999px";
-      iframe.style.width = "800px";
-      iframe.style.height = "1200px";
-      iframe.style.border = "0";
-      iframe.name = "print-frame";
-      document.body.appendChild(iframe);
-      printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
-    }
+    // Create an offscreen iframe with standard dimensions for printing
+    iframe = document.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "-9999px";
+    iframe.style.width = "800px";
+    iframe.style.height = "1200px";
+    iframe.style.border = "0";
+    iframe.name = "print-frame";
+    document.body.appendChild(iframe);
+    printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
 
     if (!printTargetDoc) {
       if (iframe) document.body.removeChild(iframe);
@@ -1551,11 +1539,11 @@ function ResultScreen({
       }
     }
 
-    // Listener to remove iframe after printing is done/canceled (Desktop only)
+    // Listener to remove iframe after printing is done/canceled
     let handleMessage: ((event: MessageEvent) => void) | null = null;
     let cleanupTimeout: any = null;
 
-    if (!isMobileOrTablet && iframe) {
+    if (iframe) {
       handleMessage = (event: MessageEvent) => {
         if (event.data && event.data.type === "print-complete") {
           clearTimeout(cleanupTimeout);
@@ -1661,12 +1649,7 @@ function ResultScreen({
               }
             };
             window.onafterprint = function() {
-              if (${isMobileOrTablet}) {
-                // Jangan tutup jendela otomatis di mobile/tablet karena event 'onafterprint'
-                // sering terpicu prematur di browser mobile, menyebabkan dialog print tertutup sebelum dicetak.
-              } else {
-                window.parent.postMessage({ type: 'print-complete' }, '*');
-              }
+              window.parent.postMessage({ type: 'print-complete' }, '*');
             };
           </script>
         </body>
