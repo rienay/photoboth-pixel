@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import QRCode from "qrcode";
 import { AdminScreen, Template } from "@/components/AdminScreen";
 import { TemplateDB, CustomTemplate } from "@/lib/db";
 import yodhaLogo from "@/assets/yodha.png";
 import arthanaLogo from "@/assets/arthana.png";
-import ruangguruLogo from "@/assets/ruangguru.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
 // PNC assets — 1x1
@@ -62,7 +62,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Screen = "home" | "frame" | "shoot" | "result" | "admin";
-type FrameId = "cafe" | "gameboy" | "bedroom" | "ruangguru" | "template";
+type FrameId = "cafe" | "gameboy" | "bedroom" | "template";
 type LayoutId = "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
 
 // Physical print sizes (cm) per layout
@@ -199,7 +199,7 @@ function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
   const [layout, setLayout] = useState<LayoutId>("3x2");
   const [variant, setVariant] = useState<string>("default");
-  const frame: FrameId = layout === "1x1" ? "template" : "ruangguru";
+  const frame: FrameId = "template";
   const [photos, setPhotos] = useState<string[]>([]);
   const [strip, setStrip] = useState<string | null>(null);
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -1121,14 +1121,7 @@ function ShootScreen({
         </div>
       )}
 
-      {/* Template frame overlay */}
-      {frame === "template" && (
-        <img
-          src={overlaySrc}
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none z-10"
-          alt="frame overlay"
-        />
-      )}
+
 
       {/* Flash */}
       {flashing && <div className="absolute inset-0 bg-white flash pointer-events-none z-30" />}
@@ -1364,13 +1357,20 @@ function ResultScreen({
 
   const [customText, setCustomText] = useState(() => {
     if (frame === "template") return "";
-    if (frame === "ruangguru") return "★ RUANG GURU ACADEMY · " + new Date().toLocaleDateString() + " ★";
     return "★ YODHA-PHOTOBOOTH · " + new Date().toLocaleDateString() + " ★";
   });
   const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading_png" | "generating_gif" | "uploading_gif" | "success" | "error" | "demo">("idle");
   const [autoResetSec, setAutoResetSec] = useState(AUTO_RESET_SECONDS);
   const [printCopies, setPrintCopies] = useState(1);
   const [qrCodeData, setQrCodeData] = useState(DRIVE_FOLDER_URL);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+
+  useEffect(() => {
+    QRCode.toDataURL(qrCodeData, { width: 300, margin: 1 })
+      .then(url => setQrCodeUrl(url))
+      .catch(err => console.error("Error generating QR code:", err));
+  }, [qrCodeData]);
+
   const uploadedRef = useRef<string | null>(null);
 
   const [viewMode, setViewMode] = useState<"strip" | "gif">("strip");
@@ -1584,7 +1584,7 @@ function ResultScreen({
           <title>Yodha-Photobooth — Cetak Foto</title>
           <style>
             @page {
-              size: A4 portrait;
+              size: ${sheetWidth}cm ${sheetHeight}cm;
               margin: 0;
             }
             * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1679,24 +1679,6 @@ function ResultScreen({
 
   return (
     <div className="w-full space-y-6">
-      {/* Auto-reset countdown bar */}
-      <div className="pixel-box p-3" style={{ background: "var(--color-lavender)" }}>
-        <div className="flex items-center justify-between mb-2">
-          <span className="pixel text-[9px]">⏱ Kembali ke awal dalam {autoResetSec} detik</span>
-          <button
-            className="pixel text-[9px] underline cursor-pointer"
-            onClick={() => setAutoResetSec(AUTO_RESET_SECONDS)}
-          >
-            Tunda
-          </button>
-        </div>
-        <div className="w-full h-3 border-2" style={{ borderColor: "var(--color-ink)", background: "var(--color-card)" }}>
-          <div
-            className="h-full transition-all duration-1000 ease-linear"
-            style={{ width: `${progressPct}%`, background: "var(--color-sage)" }}
-          />
-        </div>
-      </div>
 
       <div className="w-full grid md:grid-cols-2 gap-8 items-start">
         {/* Strip preview */}
@@ -1729,11 +1711,17 @@ function ResultScreen({
           {/* QR Code */}
           <div className="pixel-box p-4 flex flex-col items-center gap-3 w-full" style={{ background: "var(--color-card)" }}>
             <div className="pixel-box p-2 bg-white border-2 border-[#3A2A40] shadow-[3px_3px_0_0_rgba(0,0,0,0.15)] flex items-center justify-center shrink-0">
-              <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrCodeData)}`}
-                alt="QR Code Google Drive"
-                className="w-44 h-44"
-              />
+              {qrCodeUrl ? (
+                <img
+                  src={qrCodeUrl}
+                  alt="QR Code Google Drive"
+                  className="w-44 h-44"
+                />
+              ) : (
+                <div className="w-44 h-44 flex items-center justify-center text-xs font-bold text-slate-400">
+                  Memuat QR...
+                </div>
+              )}
             </div>
             <span className="pixel text-[10px] font-bold text-center">SCAN QR UNTUK SIMPAN FOTO</span>
           </div>
@@ -2256,7 +2244,6 @@ async function composeStrip(
 
   const palette: Record<FrameId, { bg: string; accent: string; title: string }> = {
     template: { bg: "#0D3B59", accent: "#F89E1B", title: "★ RESMI ★" },
-    ruangguru: { bg: "#D5ECF8", accent: "#22385C", title: "★ RUANG GURU ★" },
     cafe: { bg: "#F6CFCB", accent: "#3A2A40", title: "☕ COZY CAFE ☕" },
     gameboy: { bg: "#CFE3CB", accent: "#3A2A40", title: "▶ GAMEBOY MODE" },
     bedroom: { bg: "#CFDDF0", accent: "#3A2A40", title: "♡ RETRO ROOM ♡" },
@@ -2361,83 +2348,14 @@ async function composeStrip(
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText("🐱", pad + 50 * SCALE, decY);
     ctx.fillText("🌙", W - pad - 50 * SCALE, decY);
-  } else if (frame === "ruangguru") {
-    const rgDecY = H - pad - footerH + 90 * SCALE;
-    const stickerH = 65 * SCALE;
 
-    try {
-      const gacha = await loadImg(gachaAsset);
-      const gachaW = (gacha.width / gacha.height) * stickerH;
-      ctx.drawImage(gacha, pad + 25 * SCALE, rgDecY - stickerH / 2, gachaW, stickerH);
-    } catch (e) {
-      ctx.font = `${Math.round(28 * SCALE)}px sans-serif`;
-      ctx.fillText("🎒", pad + 50 * SCALE, rgDecY);
-    }
-
-    try {
-      const flower = await loadImg(flowerAsset);
-      const flowerW = (flower.width / flower.height) * stickerH;
-      ctx.drawImage(flower, W - pad - 25 * SCALE - flowerW, rgDecY - stickerH / 2, flowerW, stickerH);
-    } catch (e) {
-      ctx.font = `${Math.round(28 * SCALE)}px sans-serif`;
-      ctx.fillText("🎓", W - pad - 50 * SCALE, rgDecY);
-    }
-
-    try {
-      ctx.save();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      ctx.fillStyle = "#008ECF";
-      ctx.fillRect(W / 2 - 100 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
-      ctx.strokeStyle = p.accent;
-      ctx.lineWidth = 2.5 * SCALE;
-      ctx.strokeRect(W / 2 - 100 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold ${Math.round(7.5 * SCALE)}px 'Press Start 2P', monospace`;
-      ctx.fillText("SQUAD JUARA", W / 2 - 52.5 * SCALE, rgDecY - 11 * SCALE);
-
-      ctx.fillStyle = "#F89E1B";
-      ctx.fillRect(W / 2 + 5 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
-      ctx.strokeStyle = p.accent;
-      ctx.lineWidth = 2.5 * SCALE;
-      ctx.strokeRect(W / 2 + 5 * SCALE, rgDecY - 20 * SCALE, 95 * SCALE, 16 * SCALE);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold ${Math.round(7.5 * SCALE)}px 'Press Start 2P', monospace`;
-      ctx.fillText("LULUS PTN!🎓", W / 2 + 52.5 * SCALE, rgDecY - 11 * SCALE);
-
-      ctx.fillStyle = "#22385C";
-      ctx.fillRect(W / 2 - 80 * SCALE, rgDecY + 4 * SCALE, 160 * SCALE, 16 * SCALE);
-      ctx.strokeStyle = "#FFFFFF";
-      ctx.lineWidth = 1.5 * SCALE;
-      ctx.strokeRect(W / 2 - 80 * SCALE, rgDecY + 4 * SCALE, 160 * SCALE, 16 * SCALE);
-      ctx.fillStyle = "#FFFFFF";
-      ctx.font = `bold ${Math.round(7 * SCALE)}px 'Press Start 2P', monospace`;
-      ctx.fillText("★ FUTURE LEADERS ★", W / 2, rgDecY + 13 * SCALE);
-
-      ctx.restore();
-    } catch (e) {
-      console.error("Gagal menggambar banner slogan", e);
-    }
   }
 
   try {
-    if (frame === "ruangguru") {
-      const rgLogo = await loadImg(ruangguruLogo);
-      const rgLogoH = 42 * SCALE;
-      const rgLogoW = (rgLogo.width / rgLogo.height) * rgLogoH;
-      ctx.drawImage(rgLogo, pad + 8 * SCALE, pad + (headerH - rgLogoH) / 2, rgLogoW, rgLogoH);
-
-      const ydLogo = await loadImg(yodhaLogo);
-      const ydLogoH = 34 * SCALE;
-      const ydLogoW = (ydLogo.width / ydLogo.height) * ydLogoH;
-      ctx.drawImage(ydLogo, W - pad - 8 * SCALE - ydLogoW, pad + (headerH - ydLogoH) / 2, ydLogoW, ydLogoH);
-    } else {
-      const ydLogo = await loadImg(yodhaLogo);
-      const logoH = 36 * SCALE;
-      const logoW = (ydLogo.width / ydLogo.height) * logoH;
-      ctx.drawImage(ydLogo, pad + 4 * SCALE, pad + (headerH - logoH) / 2, logoW, logoH);
-    }
+    const ydLogo = await loadImg(yodhaLogo);
+    const logoH = 36 * SCALE;
+    const logoW = (ydLogo.width / ydLogo.height) * logoH;
+    ctx.drawImage(ydLogo, pad + 4 * SCALE, pad + (headerH - logoH) / 2, logoW, logoH);
   } catch (e) {
     console.error("Gagal memuat logo header", e);
   }
