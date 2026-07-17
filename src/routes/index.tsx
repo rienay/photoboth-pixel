@@ -1478,13 +1478,16 @@ function ResultScreen({
     let printTargetDoc: Document | null = null;
     let iframe: HTMLIFrameElement | null = null;
 
-    // Create an offscreen iframe with standard dimensions for printing
+    // Create an iframe inside the viewport but invisible for rendering before printing
     iframe = document.createElement("iframe");
-    iframe.style.position = "absolute";
-    iframe.style.left = "-9999px";
-    iframe.style.top = "-9999px";
-    iframe.style.width = "800px";
-    iframe.style.height = "1200px";
+    iframe.style.position = "fixed";
+    iframe.style.left = "0";
+    iframe.style.top = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.zIndex = "-9999";
+    iframe.style.opacity = "0.01";
+    iframe.style.pointerEvents = "none";
     iframe.style.border = "0";
     iframe.name = "print-frame";
     document.body.appendChild(iframe);
