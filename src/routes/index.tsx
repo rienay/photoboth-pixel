@@ -1439,27 +1439,36 @@ function ResultScreen({
     const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
     const sheetHeight = h;
 
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     let printTargetDoc: Document | null = null;
     let iframe: HTMLIFrameElement | null = null;
+    let printWindow: Window | null = null;
 
-    // Create an iframe inside the viewport but invisible for rendering before printing
-    iframe = document.createElement("iframe");
-    iframe.style.position = "fixed";
-    iframe.style.left = "0";
-    iframe.style.top = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.style.zIndex = "-9999";
-    iframe.style.opacity = "0.01";
-    iframe.style.pointerEvents = "none";
-    iframe.style.border = "0";
-    iframe.name = "print-frame";
-    document.body.appendChild(iframe);
-    printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
+    if (isMobile) {
+      printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        alert("Gagal membuka jendela cetak. Pastikan izin popup diaktifkan di browser Anda.");
+        return;
+      }
+      printTargetDoc = printWindow.document;
+    } else {
+      // Create an offscreen iframe for desktop printing
+      iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.left = "-9999px";
+      iframe.style.top = "-9999px";
+      iframe.style.width = "800px";
+      iframe.style.height = "1200px";
+      iframe.style.border = "0";
+      iframe.name = "print-frame";
+      document.body.appendChild(iframe);
+      printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
 
-    if (!printTargetDoc) {
-      if (iframe) document.body.removeChild(iframe);
-      return;
+      if (!printTargetDoc) {
+        if (iframe) document.body.removeChild(iframe);
+        return;
+      }
     }
 
     let pagesContent = "";
@@ -1506,11 +1515,11 @@ function ResultScreen({
       }
     }
 
-    // Listener to remove iframe after printing is done/canceled
+    // Listener to remove iframe after printing is done/canceled (only for desktop)
     let handleMessage: ((event: MessageEvent) => void) | null = null;
     let cleanupTimeout: any = null;
 
-    if (iframe) {
+    if (!isMobile && iframe) {
       handleMessage = (event: MessageEvent) => {
         if (event.data && event.data.type === "print-complete") {
           clearTimeout(cleanupTimeout);
@@ -1582,7 +1591,7 @@ function ResultScreen({
           </style>
         </head>
         <body>
-          ${pagesContent}
+          \${pagesContent}
           <script>
             window.onload = function() {
               const imgs = Array.from(document.querySelectorAll('img'));
@@ -1616,7 +1625,11 @@ function ResultScreen({
               }
             };
             window.onafterprint = function() {
-              window.parent.postMessage({ type: 'print-complete' }, '*');
+              if (\${isMobile}) {
+                window.close();
+              } else {
+                window.parent.postMessage({ type: 'print-complete' }, '*');
+              }
             };
           </script>
         </body>
