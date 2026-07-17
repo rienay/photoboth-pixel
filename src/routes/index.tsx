@@ -1439,30 +1439,7 @@ function ResultScreen({
     const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
     const sheetHeight = h;
 
-    let printTargetDoc: Document | null = null;
-    let iframe: HTMLIFrameElement | null = null;
-
-    // Create an iframe inside the viewport but invisible for rendering before printing
-    iframe = document.createElement("iframe");
-    iframe.style.position = "fixed";
-    iframe.style.left = "0";
-    iframe.style.top = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.style.zIndex = "-9999";
-    iframe.style.opacity = "0.01";
-    iframe.style.pointerEvents = "none";
-    iframe.style.border = "0";
-    iframe.name = "print-frame";
-    document.body.appendChild(iframe);
-    printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
-
-    if (!printTargetDoc) {
-      if (iframe) document.body.removeChild(iframe);
-      return;
-    }
-
-    // Convert base64 data URL to a lightweight Blob URL to fix Chrome Android printing blank page bug
+    // Convert base64 data URL to Blob URL to ensure fast loading/rendering
     const blob = dataURLtoBlob(strip);
     const blobUrl = URL.createObjectURL(blob);
 
@@ -1510,126 +1487,119 @@ function ResultScreen({
       }
     }
 
-    // Listener to remove iframe and revoke blob URL after printing is done/canceled
-    let handleMessage: ((event: MessageEvent) => void) | null = null;
-    let cleanupTimeout: any = null;
+    // Create container element in the main document for printing
+    const printDiv = document.createElement("div");
+    printDiv.id = "yodha-print-section";
+    printDiv.innerHTML = pagesContent;
+    document.body.appendChild(printDiv);
 
-    const cleanup = () => {
-      clearTimeout(cleanupTimeout);
-      if (iframe && document.body.contains(iframe)) {
-        document.body.removeChild(iframe);
+    // Inject print styles dynamically
+    const printStyle = document.createElement("style");
+    printStyle.id = "yodha-print-style";
+    printStyle.innerHTML = `
+      @media print {
+        body > *:not(#yodha-print-section) {
+          display: none !important;
+        }
+        html, body {
+          background: white !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        #yodha-print-section {
+          display: block !important;
+          position: absolute !important;
+          left: 0 !important;
+          top: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+        @page {
+          size: ${sheetWidth}cm ${sheetHeight}cm;
+          margin: 0;
+        }
+        .page {
+          width: 100vw !important;
+          height: 100vh !important;
+          position: relative !important;
+          page-break-after: always !important;
+          break-after: page !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          background: white !important;
+        }
+        .page:last-child {
+          page-break-after: avoid !important;
+          break-after: avoid !important;
+        }
+        .print-container {
+          position: absolute !important;
+          top: 0 !important;
+          right: 0 !important;
+          width: ${sheetWidth}cm !important;
+          height: ${sheetHeight}cm !important;
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          overflow: hidden !important;
+          padding: 0.25cm !important;
+          box-sizing: border-box !important;
+        }
+        img {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
       }
-      if (handleMessage) window.removeEventListener("message", handleMessage);
+    `;
+    document.head.appendChild(printStyle);
+
+    // Function to cleanup print elements and styles
+    const cleanup = () => {
+      if (document.getElementById("yodha-print-section")) {
+        document.body.removeChild(printDiv);
+      }
+      if (document.getElementById("yodha-print-style")) {
+        document.head.removeChild(printStyle);
+      }
       URL.revokeObjectURL(blobUrl);
     };
 
-    if (iframe) {
-      handleMessage = (event: MessageEvent) => {
-        if (event.data && event.data.type === "print-complete") {
-          cleanup();
+    // Wait for the images to decode and yield thread before printing
+    const imgs = Array.from(printDiv.querySelectorAll("img"));
+    if (imgs.length === 0) {
+      window.print();
+      cleanup();
+    } else {
+      let loadedCount = 0;
+      const triggerPrint = () => {
+        loadedCount++;
+        if (loadedCount === imgs.length) {
+          Promise.all(imgs.map(img => {
+            if (img.decode) {
+              return img.decode().catch(() => {});
+            }
+            return Promise.resolve();
+          })).then(() => {
+            // Give 500ms for browser to render
+            setTimeout(() => {
+              window.print();
+              cleanup();
+            }, 500);
+          });
         }
       };
-      window.addEventListener("message", handleMessage);
 
-      // Fallback cleanup after 60 seconds
-      cleanupTimeout = setTimeout(() => {
-        cleanup();
-      }, 60000);
+      imgs.forEach(img => {
+        if (img.complete) {
+          triggerPrint();
+        } else {
+          img.onload = triggerPrint;
+          img.onerror = triggerPrint;
+        }
+      });
     }
-
-    printTargetDoc.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8"/>
-          <title>Yodha-Photobooth — Cetak Foto</title>
-          <style>
-            @page {
-              size: ${sheetWidth}cm ${sheetHeight}cm;
-              margin: 0;
-            }
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            html, body {
-              background: white;
-              margin: 0;
-              padding: 0;
-            }
-            .page {
-              width: 100vw;
-              height: 100vh;
-              position: relative;
-              page-break-after: always;
-              break-after: page;
-              overflow: hidden;
-              background: white;
-            }
-            .page:last-child {
-              page-break-after: avoid;
-              break-after: avoid;
-            }
-            .print-container {
-              position: absolute;
-              top: 0;
-              right: 0;
-              width: ${sheetWidth}cm;
-              height: ${sheetHeight}cm;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              justify-content: center;
-              overflow: hidden;
-              padding: 0.25cm;
-              box-sizing: border-box;
-            }
-            img {
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-          </style>
-        </head>
-        <body>
-          ${pagesContent}
-          <script>
-            window.onload = function() {
-              const imgs = Array.from(document.querySelectorAll('img'));
-              if (imgs.length === 0) {
-                window.print();
-              } else {
-                let loadedCount = 0;
-                const triggerPrint = () => {
-                  loadedCount++;
-                  if (loadedCount === imgs.length) {
-                    Promise.all(imgs.map(img => {
-                      if (img.decode) {
-                        return img.decode().catch(function() {});
-                      }
-                      return Promise.resolve();
-                    })).then(function() {
-                      // Yield JS thread for 1000ms to allow browser to layout and paint before freezing thread with window.print()
-                      setTimeout(function() {
-                        window.print();
-                      }, 1000);
-                    });
-                  }
-                };
-                imgs.forEach(img => {
-                  if (img.complete) {
-                    triggerPrint();
-                  } else {
-                    img.onload = triggerPrint;
-                    img.onerror = triggerPrint;
-                  }
-                });
-              }
-            };
-            window.onafterprint = function() {
-              window.parent.postMessage({ type: 'print-complete' }, '*');
-            };
-          </script>
-        </body>
-      </html>
-    `);
-    printTargetDoc.close();
   };
 
   // Progress bar width
