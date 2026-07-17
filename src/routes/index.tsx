@@ -1881,36 +1881,60 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
-  let holes = detectHolesFromImage(frameImg);
-  let hx = 0, hy = 0, hw = FRAME_W, hh = FRAME_H;
-  if (holes.length === 1) {
-    hx = holes[0].x;
-    hy = holes[0].y;
-    hw = holes[0].w;
-    hh = holes[0].h;
-  }
+  // Fill white background for canvas
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, FRAME_W, FRAME_H);
 
-  if (photos.length > 0) {
-    try {
-      const img = await loadImg(photos[0]);
-      const holeRatio = hw / hh;
-      const imgRatio = img.width / img.height;
-      let sx = 0, sy = 0, sw = img.width, sh = img.height;
-      if (imgRatio > holeRatio) {
-        sw = img.height * holeRatio;
-        sx = (img.width - sw) / 2;
-      } else {
-        sh = img.width / holeRatio;
-        sy = (img.height - sh) / 2;
+  let holes = detectHolesFromImage(frameImg);
+
+  if (holes.length > 0) {
+    // Draw each photo into its corresponding detected hole
+    for (let i = 0; i < holes.length; i++) {
+      if (!photos[i]) break;
+      const hole = holes[i];
+      try {
+        const img = await loadImg(photos[i]);
+        const holeRatio = hole.w / hole.h;
+        const imgRatio = img.width / img.height;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > holeRatio) {
+          sw = img.height * holeRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / holeRatio;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, hole.x, hole.y, hole.w, hole.h);
+      } catch (e) {
+        console.error(`Gagal menggambar foto ${i} pada hole`, e);
+        ctx.fillStyle = "#0D3B59";
+        ctx.fillRect(hole.x, hole.y, hole.w, hole.h);
       }
-      ctx.drawImage(img, sx, sy, sw, sh, hx, hy, hw, hh);
-    } catch (e) {
-      ctx.fillStyle = "#0D3B59";
-      ctx.fillRect(hx, hy, hw, hh);
     }
   } else {
-    ctx.fillStyle = "#0D3B59";
-    ctx.fillRect(hx, hy, hw, hh);
+    // Fallback: draw photos[0] over the entire background if no holes are detected
+    if (photos.length > 0) {
+      try {
+        const img = await loadImg(photos[0]);
+        const holeRatio = FRAME_W / FRAME_H;
+        const imgRatio = img.width / img.height;
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (imgRatio > holeRatio) {
+          sw = img.height * holeRatio;
+          sx = (img.width - sw) / 2;
+        } else {
+          sh = img.width / holeRatio;
+          sy = (img.height - sh) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, FRAME_W, FRAME_H);
+      } catch (e) {
+        ctx.fillStyle = "#0D3B59";
+        ctx.fillRect(0, 0, FRAME_W, FRAME_H);
+      }
+    } else {
+      ctx.fillStyle = "#0D3B59";
+      ctx.fillRect(0, 0, FRAME_W, FRAME_H);
+    }
   }
 
   try {
