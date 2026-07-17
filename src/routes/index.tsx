@@ -1439,37 +1439,32 @@ function ResultScreen({
     const sheetWidth = (layout === "3x1" || layout === "2x1") ? w * 2 : w;
     const sheetHeight = h;
 
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
     let printTargetDoc: Document | null = null;
     let iframe: HTMLIFrameElement | null = null;
-    let printWindow: Window | null = null;
 
-    if (isMobile) {
-      printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        alert("Gagal membuka jendela cetak. Pastikan izin popup diaktifkan di browser Anda.");
-        return;
-      }
-      printTargetDoc = printWindow.document;
-    } else {
-      // Create an offscreen iframe for desktop printing
-      iframe = document.createElement("iframe");
-      iframe.style.position = "absolute";
-      iframe.style.left = "-9999px";
-      iframe.style.top = "-9999px";
-      iframe.style.width = "800px";
-      iframe.style.height = "1200px";
-      iframe.style.border = "0";
-      iframe.name = "print-frame";
-      document.body.appendChild(iframe);
-      printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
+    // Create an iframe inside the viewport but invisible for rendering before printing
+    iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.left = "0";
+    iframe.style.top = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.zIndex = "-9999";
+    iframe.style.opacity = "0.01";
+    iframe.style.pointerEvents = "none";
+    iframe.style.border = "0";
+    iframe.name = "print-frame";
+    document.body.appendChild(iframe);
+    printTargetDoc = iframe.contentWindow?.document || iframe.contentDocument || null;
 
-      if (!printTargetDoc) {
-        if (iframe) document.body.removeChild(iframe);
-        return;
-      }
+    if (!printTargetDoc) {
+      if (iframe) document.body.removeChild(iframe);
+      return;
     }
+
+    // Convert base64 data URL to a lightweight Blob URL to fix Chrome Android printing blank page bug
+    const blob = dataURLtoBlob(strip);
+    const blobUrl = URL.createObjectURL(blob);
 
     let pagesContent = "";
 
@@ -1483,8 +1478,8 @@ function ResultScreen({
           pagesContent += `
             <div class="page">
               <div class="print-container">
-                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
-                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+                <img src="${blobUrl}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+                <img src="${blobUrl}" style="width:50%;height:100%;display:block;object-fit:contain;" />
               </div>
             </div>
           `;
@@ -1495,7 +1490,7 @@ function ResultScreen({
             <div class="page">
               <div class="print-container">
                 <div style="width:50%; height:100%;"></div>
-                <img src="${strip}" style="width:50%;height:100%;display:block;object-fit:contain;" />
+                <img src="${blobUrl}" style="width:50%;height:100%;display:block;object-fit:contain;" />
               </div>
             </div>
           `;
@@ -1508,35 +1503,37 @@ function ResultScreen({
         pagesContent += `
           <div class="page">
             <div class="print-container">
-              <img src="${strip}" style="width:100%;height:100%;display:block;object-fit:contain;" />
+              <img src="${blobUrl}" style="width:100%;height:100%;display:block;object-fit:contain;" />
             </div>
           </div>
         `;
       }
     }
 
-    // Listener to remove iframe after printing is done/canceled (only for desktop)
+    // Listener to remove iframe and revoke blob URL after printing is done/canceled
     let handleMessage: ((event: MessageEvent) => void) | null = null;
     let cleanupTimeout: any = null;
 
-    if (!isMobile && iframe) {
+    const cleanup = () => {
+      clearTimeout(cleanupTimeout);
+      if (iframe && document.body.contains(iframe)) {
+        document.body.removeChild(iframe);
+      }
+      if (handleMessage) window.removeEventListener("message", handleMessage);
+      URL.revokeObjectURL(blobUrl);
+    };
+
+    if (iframe) {
       handleMessage = (event: MessageEvent) => {
         if (event.data && event.data.type === "print-complete") {
-          clearTimeout(cleanupTimeout);
-          if (iframe && document.body.contains(iframe)) {
-            document.body.removeChild(iframe);
-          }
-          if (handleMessage) window.removeEventListener("message", handleMessage);
+          cleanup();
         }
       };
       window.addEventListener("message", handleMessage);
 
       // Fallback cleanup after 60 seconds
       cleanupTimeout = setTimeout(() => {
-        if (iframe && document.body.contains(iframe)) {
-          document.body.removeChild(iframe);
-        }
-        if (handleMessage) window.removeEventListener("message", handleMessage);
+        cleanup();
       }, 60000);
     }
 
@@ -1591,7 +1588,7 @@ function ResultScreen({
           </style>
         </head>
         <body>
-          \${pagesContent}
+          ${pagesContent}
           <script>
             window.onload = function() {
               const imgs = Array.from(document.querySelectorAll('img'));
@@ -1608,9 +1605,10 @@ function ResultScreen({
                       }
                       return Promise.resolve();
                     })).then(function() {
+                      // Yield JS thread for 1000ms to allow browser to layout and paint before freezing thread with window.print()
                       setTimeout(function() {
                         window.print();
-                      }, 300);
+                      }, 1000);
                     });
                   }
                 };
@@ -1625,11 +1623,7 @@ function ResultScreen({
               }
             };
             window.onafterprint = function() {
-              if (\${isMobile}) {
-                window.close();
-              } else {
-                window.parent.postMessage({ type: 'print-complete' }, '*');
-              }
+              window.parent.postMessage({ type: 'print-complete' }, '*');
             };
           </script>
         </body>
@@ -2359,4 +2353,16 @@ function loadImg(src: string): Promise<HTMLImageElement> {
     img.onerror = reject;
     img.src = src;
   });
+}
+
+function dataURLtoBlob(dataurl: string): Blob {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)![1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
 }
