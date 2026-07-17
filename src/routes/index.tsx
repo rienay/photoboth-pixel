@@ -58,7 +58,7 @@ const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPh
   { id: "2x1", name: "Strip Pendek", rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
   { id: "1x1", name: "Foto Tunggal", rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm", emoji: "📷" },
   { id: "2x2", name: "Grid 4 Foto", rows: 2, cols: 2, totalPhotos: 4, desc: "4 foto dua kolom · Cetak 10×15 cm", emoji: "🗒️" },
-  { id: "4x2", name: "Grid 8 Foto", rows: 4, cols: 2, totalPhotos: 8, desc: "8 foto empat baris · Cetak 10×15 cm", emoji: "🎦" },
+  { id: "4x2", name: "Grid 8 Foto (4 Jepretan)", rows: 4, cols: 2, totalPhotos: 4, desc: "8 foto empat baris dengan 4 jepretan (kiri-kanan berpasangan) · Cetak 10×15 cm", emoji: "🎦" },
 ];
 
 
@@ -1031,7 +1031,7 @@ function ShootScreen({
 
     let strip: string;
     if (frame === "template") {
-      strip = await composeTemplateFrame(captured, variant, customImg, presetId);
+      strip = await composeTemplateFrame(captured, variant, customImg, presetId, layout);
     } else if (layout === "3x2") {
       strip = await compose3x2Frame(captured, variant, customImg, presetId);
     } else if (layout === "3x1" && variant !== "default") {
@@ -1152,24 +1152,30 @@ function ShootScreen({
               background: "#1a1a2e"
             }}>
               <img src={overlaySrc} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20" alt="" />
-              {detectedHoles.map((h, i) => (
-                <div key={i} className="absolute overflow-hidden z-10 flex items-center justify-center" style={{
-                  left: `${h.left}%`, top: `${h.top}%`, width: `${h.width}%`, height: `${h.height}%`, background: "#2a2a4a"
-                }}>
-                  {photos[i] ? <img src={photos[i]} className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} alt="" /> : <span className="pixel text-white opacity-25 text-xs">{i + 1}</span>}
-                </div>
-              ))}
+              {detectedHoles.map((h, i) => {
+                const photoIndex = layout === "4x2" ? Math.floor(i / 2) : i;
+                return (
+                  <div key={i} className="absolute overflow-hidden z-10 flex items-center justify-center" style={{
+                    left: `${h.left}%`, top: `${h.top}%`, width: `${h.width}%`, height: `${h.height}%`, background: "#2a2a4a"
+                  }}>
+                    {photos[photoIndex] ? <img src={photos[photoIndex]} className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} alt="" /> : <span className="pixel text-white opacity-25 text-xs">{photoIndex + 1}</span>}
+                  </div>
+                );
+              })}
             </div>
           ) : variantConfig ? (
             <div className="relative w-full overflow-hidden" style={{ aspectRatio: `${variantConfig.w} / ${variantConfig.h}`, background: "#1a1a2e" }}>
               <img src={overlaySrc} className="absolute inset-0 w-full h-full object-cover pointer-events-none z-20" alt="" />
-              {variantConfig.holes.map((h, i) => (
-                <div key={i} className="absolute overflow-hidden z-10 flex items-center justify-center" style={{
-                  left: `${h.left}%`, top: `${h.top}%`, width: `${h.width}%`, height: `${h.height}%`, background: "#2a2a4a"
-                }}>
-                  {photos[i] ? <img src={photos[i]} className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} alt="" /> : <span className="pixel text-white opacity-25 text-xs">{i + 1}</span>}
-                </div>
-              ))}
+              {variantConfig.holes.map((h, i) => {
+                const photoIndex = layout === "4x2" ? Math.floor(i / 2) : i;
+                return (
+                  <div key={i} className="absolute overflow-hidden z-10 flex items-center justify-center" style={{
+                    left: `${h.left}%`, top: `${h.top}%`, width: `${h.width}%`, height: `${h.height}%`, background: "#2a2a4a"
+                  }}>
+                    {photos[photoIndex] ? <img src={photos[photoIndex]} className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} alt="" /> : <span className="pixel text-white opacity-25 text-xs">{photoIndex + 1}</span>}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className={`grid gap-1 ${layoutConfig.cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
@@ -1826,7 +1832,7 @@ function detectHolesFromImage(frameImg: HTMLImageElement): { x: number; y: numbe
   return holes;
 }
 
-async function composeTemplateFrame(photos: string[], variant: string = "default", customImg?: string, presetId?: string): Promise<string> {
+async function composeTemplateFrame(photos: string[], variant: string = "default", customImg?: string, presetId?: string, layout?: string): Promise<string> {
   const effectivePreset = presetId || variant;
 
   if (!customImg) throw new Error("Template image is missing!");
@@ -1851,10 +1857,11 @@ async function composeTemplateFrame(photos: string[], variant: string = "default
   if (holes.length > 0) {
     // Draw each photo into its corresponding detected hole
     for (let i = 0; i < holes.length; i++) {
-      if (!photos[i]) break;
+      const photoIndex = layout === "4x2" ? Math.floor(i / 2) : i;
+      if (!photos[photoIndex]) break;
       const hole = holes[i];
       try {
-        const img = await loadImg(photos[i]);
+        const img = await loadImg(photos[photoIndex]);
         const holeRatio = hole.w / hole.h;
         const imgRatio = img.width / img.height;
         let sx = 0, sy = 0, sw = img.width, sh = img.height;
