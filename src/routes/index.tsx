@@ -12,38 +12,7 @@ import pnc3Asset from "@/assets/pnc/1x1/ekskusif/3.png";
 import pnc4Asset from "@/assets/pnc/1x1/ekskusif/4.png";
 import pnc15Asset from "@/assets/pnc/1x1/15.png";
 
-// PNC assets — 2x1
-import pnc19Asset from "@/assets/pnc/2x1/19.png";
-
-// PNC assets — 3x2 (reguler)
-import pnc7Asset from "@/assets/pnc/3x2/7.png";
-import pnc8Asset from "@/assets/pnc/3x2/8.png";
-import pnc9Asset from "@/assets/pnc/3x2/9.png";
-import pnc10Asset from "@/assets/pnc/3x2/10.png";
-import pnc11Asset from "@/assets/pnc/3x2/11.png";
-import pnc12Asset from "@/assets/pnc/3x2/12.png";
-import pnc13Asset from "@/assets/pnc/3x2/13.png";
-import pnc14Asset from "@/assets/pnc/3x2/14.png";
-import pnc16Asset from "@/assets/pnc/3x2/16.png";
-import pnc21Asset from "@/assets/pnc/3x2/21.png";
-import pnc27Asset from "@/assets/pnc/3x2/27.png";
-import pnc28Asset from "@/assets/pnc/3x2/28.png";
-
-// PNC assets — 3x2 (eksklusif)
-import pnc5Asset from "@/assets/pnc/3x2/ekskusif/5.png";
-import pnc6Asset from "@/assets/pnc/3x2/ekskusif/6.png";
-
-// PNC assets — 2x2
-import pnc17Asset from "@/assets/pnc/2x2/17.png";
-import pnc18Asset from "@/assets/pnc/2x2/18.png";
-import pnc22Asset from "@/assets/pnc/2x2/22.png";
-import pnc23Asset from "@/assets/pnc/2x2/23.png";
-import pnc24Asset from "@/assets/pnc/2x2/24.png";
-import pnc25Asset from "@/assets/pnc/2x2/25.png";
-import pnc26Asset from "@/assets/pnc/2x2/26.png";
-
 // PNC assets — 4x2
-import pnc20Asset from "@/assets/pnc/4x2/20.png";
 import pnc4x2_9Asset from "@/assets/pnc/4x2/9.png";
 import pnc4x2_10Asset from "@/assets/pnc/4x2/10.png";
 import pnc4x2_11Asset from "@/assets/pnc/4x2/11.png";
@@ -169,36 +138,6 @@ function getDefaultTemplates(disabledIds: string[]): Template[] {
     { id: "1x1_pnc15", name: "PNC 15", layout: "1x1", img: pnc15Asset, isCustom: false, enabled: e("1x1_pnc15"), presetId: "pnc15" },
     { id: "1x1_pnc3", name: "PNC 3", layout: "1x1", img: pnc3Asset, isCustom: false, enabled: e("1x1_pnc3"), presetId: "pnc3" },
     { id: "1x1_pnc4", name: "PNC 4", layout: "1x1", img: pnc4Asset, isCustom: false, enabled: e("1x1_pnc4"), presetId: "pnc4" },
-
-    // ── 2x1 (Strip Pendek) ────────────────────────────────
-    { id: "2x1_pnc19", name: "PNC 19", layout: "2x1", img: pnc19Asset, isCustom: false, enabled: e("2x1_pnc19"), presetId: "pnc19" },
-
-    // ── 3x2 (Grid 6 Foto) — reguler ──────────────────────
-    { id: "3x2_pnc7", name: "PNC 7", layout: "3x2", img: pnc7Asset, isCustom: false, enabled: e("3x2_pnc7"), presetId: "pnc7" },
-    { id: "3x2_pnc8", name: "PNC 8", layout: "3x2", img: pnc8Asset, isCustom: false, enabled: e("3x2_pnc8"), presetId: "pnc8" },
-    { id: "3x2_pnc9", name: "PNC 9", layout: "3x2", img: pnc9Asset, isCustom: false, enabled: e("3x2_pnc9"), presetId: "pnc9" },
-    { id: "3x2_pnc10", name: "PNC 10", layout: "3x2", img: pnc10Asset, isCustom: false, enabled: e("3x2_pnc10"), presetId: "pnc10" },
-    { id: "3x2_pnc11", name: "PNC 11", layout: "3x2", img: pnc11Asset, isCustom: false, enabled: e("3x2_pnc11"), presetId: "pnc11" },
-    { id: "3x2_pnc12", name: "PNC 12", layout: "3x2", img: pnc12Asset, isCustom: false, enabled: e("3x2_pnc12"), presetId: "pnc12" },
-    { id: "3x2_pnc13", name: "PNC 13", layout: "3x2", img: pnc13Asset, isCustom: false, enabled: e("3x2_pnc13"), presetId: "pnc13" },
-    { id: "3x2_pnc14", name: "PNC 14", layout: "3x2", img: pnc14Asset, isCustom: false, enabled: e("3x2_pnc14"), presetId: "pnc14" },
-    { id: "3x2_pnc16", name: "PNC 16", layout: "3x2", img: pnc16Asset, isCustom: false, enabled: e("3x2_pnc16"), presetId: "pnc16" },
-    { id: "3x2_pnc21", name: "PNC 21", layout: "3x2", img: pnc21Asset, isCustom: false, enabled: e("3x2_pnc21"), presetId: "pnc21" },
-    { id: "3x2_pnc27", name: "PNC 27", layout: "3x2", img: pnc27Asset, isCustom: false, enabled: e("3x2_pnc27"), presetId: "pnc27" },
-    { id: "3x2_pnc28", name: "PNC 28", layout: "3x2", img: pnc28Asset, isCustom: false, enabled: e("3x2_pnc28"), presetId: "pnc28" },
-    // ── 3x2 (Grid 6 Foto) — eksklusif ────────────────────
-    { id: "3x2_pnc5", name: "PNC 5", layout: "3x2", img: pnc5Asset, isCustom: false, enabled: e("3x2_pnc5"), presetId: "pnc5" },
-    { id: "3x2_pnc6", name: "PNC 6", layout: "3x2", img: pnc6Asset, isCustom: false, enabled: e("3x2_pnc6"), presetId: "pnc6" },
-
-    // ── 2x2 (Grid 4 Foto) ─────────────────────────────────
-    { id: "2x2_pnc17", name: "PNC 17", layout: "2x2", img: pnc17Asset, isCustom: false, enabled: e("2x2_pnc17"), presetId: "pnc17" },
-    { id: "2x2_pnc18", name: "PNC 18", layout: "2x2", img: pnc18Asset, isCustom: false, enabled: e("2x2_pnc18"), presetId: "pnc18" },
-    { id: "2x2_pnc22", name: "PNC 22", layout: "2x2", img: pnc22Asset, isCustom: false, enabled: e("2x2_pnc22"), presetId: "pnc22" },
-    { id: "2x2_pnc23", name: "PNC 23", layout: "2x2", img: pnc23Asset, isCustom: false, enabled: e("2x2_pnc23"), presetId: "pnc23" },
-    { id: "2x2_pnc24", name: "PNC 24", layout: "2x2", img: pnc24Asset, isCustom: false, enabled: e("2x2_pnc24"), presetId: "pnc24" },
-    { id: "2x2_pnc25", name: "PNC 25", layout: "2x2", img: pnc25Asset, isCustom: false, enabled: e("2x2_pnc25"), presetId: "pnc25" },
-    { id: "2x2_pnc26", name: "PNC 26", layout: "2x2", img: pnc26Asset, isCustom: false, enabled: e("2x2_pnc26"), presetId: "pnc26" },
-
     // ── 4x2 (Grid 8 Foto) ─────────────────────────────────
     { id: "4x2_pnc9", name: "PNC 9", layout: "4x2", img: pnc4x2_9Asset, isCustom: false, enabled: e("4x2_pnc9"), presetId: "pnc9" },
     { id: "4x2_pnc10", name: "PNC 10", layout: "4x2", img: pnc4x2_10Asset, isCustom: false, enabled: e("4x2_pnc10"), presetId: "pnc10" },
@@ -210,7 +149,6 @@ function getDefaultTemplates(disabledIds: string[]): Template[] {
     { id: "4x2_pnc16", name: "PNC 16", layout: "4x2", img: pnc4x2_16Asset, isCustom: false, enabled: e("4x2_pnc16"), presetId: "pnc16" },
     { id: "4x2_pnc17", name: "PNC 17", layout: "4x2", img: pnc4x2_17Asset, isCustom: false, enabled: e("4x2_pnc17"), presetId: "pnc17" },
     { id: "4x2_pnc18", name: "PNC 18", layout: "4x2", img: pnc4x2_18Asset, isCustom: false, enabled: e("4x2_pnc18"), presetId: "pnc18" },
-    { id: "4x2_pnc20", name: "PNC 20", layout: "4x2", img: pnc20Asset, isCustom: false, enabled: e("4x2_pnc20"), presetId: "pnc20" },
   ];
 }
 
