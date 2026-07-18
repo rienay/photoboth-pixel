@@ -1652,6 +1652,18 @@ function ResultScreen({
               )}
             </div>
             <span className="pixel text-[10px] font-bold text-center">SCAN QR UNTUK SIMPAN FOTO</span>
+            {uploadStatus === "uploading_png" && (
+              <span className="pixel text-[9px] text-amber-600 animate-pulse text-center">⏳ Mengunggah ke Google Drive...</span>
+            )}
+            {uploadStatus === "success" && (
+              <span className="pixel text-[9px] text-emerald-600 text-center font-bold">✅ Berhasil diunggah ke Google Drive!</span>
+            )}
+            {uploadStatus === "error" && (
+              <span className="pixel text-[9px] text-rose-600 text-center font-bold">❌ Gagal mengunggah ke Drive! (Cek Koneksi)</span>
+            )}
+            {uploadStatus === "demo" && (
+              <span className="pixel text-[9px] text-slate-500 text-center">⚙️ Mode Demo (Tidak ada upload URL)</span>
+            )}
           </div>
 
           {/* Print Copies Selector */}
