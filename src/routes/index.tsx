@@ -24,6 +24,12 @@ import pnc4x2_16Asset from "@/assets/pnc/4x2/16.png";
 import pnc4x2_17Asset from "@/assets/pnc/4x2/17.png";
 import pnc4x2_18Asset from "@/assets/pnc/4x2/18.png";
 
+// RAICAB assets
+import raicab15Asset from "@/assets/raicab/15.png";
+import raicab16Asset from "@/assets/raicab/16.png";
+import raicab17Asset from "@/assets/raicab/17.png";
+import raicab18Asset from "@/assets/raicab/18.png";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -42,10 +48,11 @@ export const Route = createFileRoute("/")({
 
 type Screen = "home" | "frame" | "shoot" | "result" | "admin";
 type FrameId = "cafe" | "gameboy" | "bedroom" | "template";
-type LayoutId = "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
+type LayoutId = "3x1" | "3x2" | "2x1" | "1x1" | "2x2" | "4x2";
 
 // Physical print sizes (cm) per layout
 const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; label: string }> = {
+  "3x1": { w: 5, h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "3x2": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
   "2x1": { w: 5, h: 15, sheets: 2, label: "5×15 cm · 2 strip (1 lembar 4R)" },
   "1x1": { w: 10, h: 15, sheets: 1, label: "10×15 cm · 1 lembar" },
@@ -138,6 +145,7 @@ function getDefaultTemplates(disabledIds: string[]): Template[] {
     { id: "1x1_pnc15", name: "PNC 15", layout: "1x1", img: pnc15Asset, isCustom: false, enabled: e("1x1_pnc15"), presetId: "pnc15" },
     { id: "1x1_pnc3", name: "PNC 3", layout: "1x1", img: pnc3Asset, isCustom: false, enabled: e("1x1_pnc3"), presetId: "pnc3" },
     { id: "1x1_pnc4", name: "PNC 4", layout: "1x1", img: pnc4Asset, isCustom: false, enabled: e("1x1_pnc4"), presetId: "pnc4" },
+    { id: "1x1_raicab15", name: "RAICAB 15", layout: "1x1", img: raicab15Asset, isCustom: false, enabled: e("1x1_raicab15"), presetId: "raicab15" },
     // ── 4x2 (Grid 8 Foto) ─────────────────────────────────
     { id: "4x2_pnc9", name: "PNC 9", layout: "4x2", img: pnc4x2_9Asset, isCustom: false, enabled: e("4x2_pnc9"), presetId: "pnc9" },
     { id: "4x2_pnc10", name: "PNC 10", layout: "4x2", img: pnc4x2_10Asset, isCustom: false, enabled: e("4x2_pnc10"), presetId: "pnc10" },
@@ -149,6 +157,9 @@ function getDefaultTemplates(disabledIds: string[]): Template[] {
     { id: "4x2_pnc16", name: "PNC 16", layout: "4x2", img: pnc4x2_16Asset, isCustom: false, enabled: e("4x2_pnc16"), presetId: "pnc16" },
     { id: "4x2_pnc17", name: "PNC 17", layout: "4x2", img: pnc4x2_17Asset, isCustom: false, enabled: e("4x2_pnc17"), presetId: "pnc17" },
     { id: "4x2_pnc18", name: "PNC 18", layout: "4x2", img: pnc4x2_18Asset, isCustom: false, enabled: e("4x2_pnc18"), presetId: "pnc18" },
+    { id: "4x2_raicab16", name: "RAICAB 16", layout: "4x2", img: raicab16Asset, isCustom: false, enabled: e("4x2_raicab16"), presetId: "raicab16" },
+    { id: "4x2_raicab17", name: "RAICAB 17", layout: "4x2", img: raicab17Asset, isCustom: false, enabled: e("4x2_raicab17"), presetId: "raicab17" },
+    { id: "4x2_raicab18", name: "RAICAB 18", layout: "4x2", img: raicab18Asset, isCustom: false, enabled: e("4x2_raicab18"), presetId: "raicab18" },
   ];
 }
 
