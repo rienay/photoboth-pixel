@@ -8,13 +8,13 @@ import arthanaLogo from "@/assets/arthana.png";
 import gachaAsset from "@/assets/GACHA MACHINE.png";
 import flowerAsset from "@/assets/FLOWER.png";
 // PNC assets — 1x1
-import pnc3Asset from "@/assets/pnc/1x1/ekskusif/3.png";
-import pnc4Asset from "@/assets/pnc/1x1/ekskusif/4.png";
+// import pnc3Asset from "@/assets/pnc/1x1/ekskusif/3.png";
+// import pnc4Asset from "@/assets/pnc/1x1/ekskusif/4.png";
 import pnc15Asset from "@/assets/pnc/1x1/15.png";
 
 // PNC assets — 4x2
-import pnc4x2_9Asset from "@/assets/pnc/4x2/9.png";
-import pnc4x2_10Asset from "@/assets/pnc/4x2/10.png";
+// import pnc4x2_9Asset from "@/assets/pnc/4x2/9.png";
+// import pnc4x2_10Asset from "@/assets/pnc/4x2/10.png";
 import pnc4x2_11Asset from "@/assets/pnc/4x2/11.png";
 import pnc4x2_12Asset from "@/assets/pnc/4x2/12.png";
 import pnc4x2_13Asset from "@/assets/pnc/4x2/13.png";
@@ -61,11 +61,11 @@ const PRINT_SIZES: Record<LayoutId, { w: number; h: number; sheets: number; labe
 };
 
 const LAYOUTS: { id: LayoutId; name: string; rows: number; cols: number; totalPhotos: number; desc: string; emoji: string }[] = [
+  { id: "4x2", name: "Grid 8 Foto (4 Jepretan)", rows: 4, cols: 2, totalPhotos: 4, desc: "8 foto empat baris dengan 4 jepretan (kiri-kanan berpasangan) · Cetak 10×15 cm", emoji: "🎦" },
+  { id: "1x1", name: "Foto Tunggal", rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm", emoji: "📷" },
   { id: "3x2", name: "Grid 6 Foto", rows: 3, cols: 2, totalPhotos: 6, desc: "6 foto dua kolom · Cetak 10×15 cm", emoji: "🖼️" },
   { id: "2x1", name: "Strip Pendek", rows: 2, cols: 1, totalPhotos: 2, desc: "2 foto susun ke bawah · Cetak 5×15 cm", emoji: "📸" },
-  { id: "1x1", name: "Foto Tunggal", rows: 1, cols: 1, totalPhotos: 1, desc: "1 foto polaroid · Cetak 10×15 cm", emoji: "📷" },
   { id: "2x2", name: "Grid 4 Foto", rows: 2, cols: 2, totalPhotos: 4, desc: "4 foto dua kolom · Cetak 10×15 cm", emoji: "🗒️" },
-  { id: "4x2", name: "Grid 8 Foto (4 Jepretan)", rows: 4, cols: 2, totalPhotos: 4, desc: "8 foto empat baris dengan 4 jepretan (kiri-kanan berpasangan) · Cetak 10×15 cm", emoji: "🎦" },
 ];
 
 
@@ -141,14 +141,12 @@ function useFullscreen() {
 function getDefaultTemplates(disabledIds: string[]): Template[] {
   const e = (id: string) => !disabledIds.includes(id);
   return [
-    // ── 1x1 (Foto Tunggal) ────────────────────────────────
-    { id: "1x1_pnc15", name: "PNC 15", layout: "1x1", img: pnc15Asset, isCustom: false, enabled: e("1x1_pnc15"), presetId: "pnc15" },
-    { id: "1x1_pnc3", name: "PNC 3", layout: "1x1", img: pnc3Asset, isCustom: false, enabled: e("1x1_pnc3"), presetId: "pnc3" },
-    { id: "1x1_pnc4", name: "PNC 4", layout: "1x1", img: pnc4Asset, isCustom: false, enabled: e("1x1_pnc4"), presetId: "pnc4" },
-    { id: "1x1_raicab15", name: "RAICAB 15", layout: "1x1", img: raicab15Asset, isCustom: false, enabled: e("1x1_raicab15"), presetId: "raicab15" },
     // ── 4x2 (Grid 8 Foto) ─────────────────────────────────
-    { id: "4x2_pnc9", name: "PNC 9", layout: "4x2", img: pnc4x2_9Asset, isCustom: false, enabled: e("4x2_pnc9"), presetId: "pnc9" },
-    { id: "4x2_pnc10", name: "PNC 10", layout: "4x2", img: pnc4x2_10Asset, isCustom: false, enabled: e("4x2_pnc10"), presetId: "pnc10" },
+    { id: "4x2_raicab16", name: "RAICAB 16", layout: "4x2", img: raicab16Asset, isCustom: false, enabled: e("4x2_raicab16"), presetId: "raicab16" },
+    { id: "4x2_raicab17", name: "RAICAB 17", layout: "4x2", img: raicab17Asset, isCustom: false, enabled: e("4x2_raicab17"), presetId: "raicab17" },
+    { id: "4x2_raicab18", name: "RAICAB 18", layout: "4x2", img: raicab18Asset, isCustom: false, enabled: e("4x2_raicab18"), presetId: "raicab18" },
+    // { id: "4x2_pnc9", name: "PNC 9", layout: "4x2", img: pnc4x2_9Asset, isCustom: false, enabled: e("4x2_pnc9"), presetId: "pnc9" },
+    // { id: "4x2_pnc10", name: "PNC 10", layout: "4x2", img: pnc4x2_10Asset, isCustom: false, enabled: e("4x2_pnc10"), presetId: "pnc10" },
     { id: "4x2_pnc11", name: "PNC 11", layout: "4x2", img: pnc4x2_11Asset, isCustom: false, enabled: e("4x2_pnc11"), presetId: "pnc11" },
     { id: "4x2_pnc12", name: "PNC 12", layout: "4x2", img: pnc4x2_12Asset, isCustom: false, enabled: e("4x2_pnc12"), presetId: "pnc12" },
     { id: "4x2_pnc13", name: "PNC 13", layout: "4x2", img: pnc4x2_13Asset, isCustom: false, enabled: e("4x2_pnc13"), presetId: "pnc13" },
@@ -157,17 +155,20 @@ function getDefaultTemplates(disabledIds: string[]): Template[] {
     { id: "4x2_pnc16", name: "PNC 16", layout: "4x2", img: pnc4x2_16Asset, isCustom: false, enabled: e("4x2_pnc16"), presetId: "pnc16" },
     { id: "4x2_pnc17", name: "PNC 17", layout: "4x2", img: pnc4x2_17Asset, isCustom: false, enabled: e("4x2_pnc17"), presetId: "pnc17" },
     { id: "4x2_pnc18", name: "PNC 18", layout: "4x2", img: pnc4x2_18Asset, isCustom: false, enabled: e("4x2_pnc18"), presetId: "pnc18" },
-    { id: "4x2_raicab16", name: "RAICAB 16", layout: "4x2", img: raicab16Asset, isCustom: false, enabled: e("4x2_raicab16"), presetId: "raicab16" },
-    { id: "4x2_raicab17", name: "RAICAB 17", layout: "4x2", img: raicab17Asset, isCustom: false, enabled: e("4x2_raicab17"), presetId: "raicab17" },
-    { id: "4x2_raicab18", name: "RAICAB 18", layout: "4x2", img: raicab18Asset, isCustom: false, enabled: e("4x2_raicab18"), presetId: "raicab18" },
+
+    // ── 1x1 (Foto Tunggal) ────────────────────────────────
+    { id: "1x1_raicab15", name: "RAICAB 15", layout: "1x1", img: raicab15Asset, isCustom: false, enabled: e("1x1_raicab15"), presetId: "raicab15" },
+    { id: "1x1_pnc15", name: "PNC 15", layout: "1x1", img: pnc15Asset, isCustom: false, enabled: e("1x1_pnc15"), presetId: "pnc15" },
+    // { id: "1x1_pnc3", name: "PNC 3", layout: "1x1", img: pnc3Asset, isCustom: false, enabled: e("1x1_pnc3"), presetId: "pnc3" },
+    // { id: "1x1_pnc4", name: "PNC 4", layout: "1x1", img: pnc4Asset, isCustom: false, enabled: e("1x1_pnc4"), presetId: "pnc4" },
   ];
 }
 
 /* ───────────────────────── Main Component ───────────────────────── */
 function Photobooth() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [layout, setLayout] = useState<LayoutId>("3x2");
-  const [variant, setVariant] = useState<string>("default");
+  const [layout, setLayout] = useState<LayoutId>("4x2");
+  const [variant, setVariant] = useState<string>("raicab16");
   const frame: FrameId = "template";
   const [photos, setPhotos] = useState<string[]>([]);
   const [strip, setStrip] = useState<string | null>(null);
